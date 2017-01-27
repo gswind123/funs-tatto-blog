@@ -1,0 +1,22 @@
+{
+  "name": "swipe-web-blog",
+  "version": "1.0.0",
+  "description": "a swipe support blog",
+  "main": "index.js",
+  "scripts": {
+    "start" : "node index"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gswind123/funs-tatto-blog.git"
+  },
+  "keywords": [
+    "blog"
+  ],
+  "author": "yw_sun",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gswind123/funs-tatto-blog/issues"
+  },
+  "homepage": "https://github.com/gswind123/funs-tatto-blog#readme"
+}

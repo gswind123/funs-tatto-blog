@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"   content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="assets/libs/swipe_style.css" />
+    <link rel="stylesheet" href="assets/styles/page_style.css" />
+</head>
+<body style="overflow:hidden">
+    <div id="pages_container" class="swipe-vertical">
+        <div class="swipe-vertical-wrap" id="pages">
+            <!-- add element pages here-->
+        </div>
+    </div>
+</body>
+<script src="assets/libs/swipe.js"></script>
+<script src="assets/libs/jquery.min.js"></script>
+<script type="text/javascript">
+    var scale = 1 / window.devicePixelRatio;
+    document.querySelector('meta[name="viewport"]').setAttribute('content','initial-scale=' + scale + ', maximum-scale=' + scale + ', minimum-scale=' + scale + ', user-scalable=no');
+</script>
+<script src="assets/views/index_page_item.js"></script>
+<script>
+    //inject real data
+    var pages = document.querySelector("#pages");
+    for(var i=0;i<3;i++) {
+        var item = new IndexPageItem();
+        item.setTitle("凤城烟雨这个标题有点太短了"+i)
+                .setImgSrc("./assets/images/tatto.jpg")
+                .setDesc("这个是一个关于我不太知道为什么要写的博客的小故事,所以随便写写就好,不用太操心")
+                .setImgFooter("第 "+(i+1)+" 页");
+        pages.appendChild(item.getHTMLNode());
+    }
+
+    function initSwipe() {
+        var page_container = document.querySelector("#pages_container");
+        page_container.setAttribute("style",window.innerHeight+"px");
+
+        var swipe = new Swipe(page_container,{
+            startSlide: 0,
+            speed: 400,
+            autoStart:false,
+            orientation:"vertical",
+            auto: 0,
+            draggable: true,
+            continuous: false,
+            disableScroll: true,
+            stopPropagation: false,
+            slideHeight : window.innerHeight
+        });
+    }
+    initSwipe();
+
+</script>
+</html>
+
