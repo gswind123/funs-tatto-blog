@@ -2,30 +2,9 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport"   content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <link rel="stylesheet" href="assets/libs/swipe_style.css" />
-    <link rel="stylesheet" href="assets/styles/page_style.css" />
 </head>
 <body>
-<div id="pages_container">
-    <div  id="pages">
-        <!-- add element pages here-->
-        <img src="http://pic6.huitu.com/res/20130116/84481_20130116142820494200_1.jpg"></img>
-    </div>
-</div>
+    <iframe id="device" src="index.html" scrolling="false" style="width:360px;height:640px"></iframe>
 </body>
-<script src="assets/libs/swipe.js"></script>
-<script type="text/javascript">
-    var scale = 1 / window.devicePixelRatio;
-    document.querySelector('meta[name="viewport"]').setAttribute('content','initial-scale=' + scale + ', maximum-scale=' + scale + ', minimum-scale=' + scale + ', user-scalable=no');
-</script>
-<script>
-    url = "http://pic6.huitu.com/res/20130116/84481_20130116142820494200_1.jpg";
-    var pages = document.querySelector("#pages");
-    var img = document.createElement("image");
-    img.setAttribute("src", url);
-    pages.appendChild(img);
-
-</script>
 </html>
 

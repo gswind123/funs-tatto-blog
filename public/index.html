@@ -21,17 +21,23 @@
 </script>
 <script src="assets/views/index_page_item.js"></script>
 <script>
-    //inject real data
-    var pages = document.querySelector("#pages");
-    for(var i=0;i<3;i++) {
-        var item = new IndexPageItem();
-        item.setTitle("凤城烟雨这个标题有点太短了"+i)
-                .setImgSrc("./assets/images/tatto.jpg")
-                .setDesc("这个是一个关于我不太知道为什么要写的博客的小故事,所以随便写写就好,不用太操心")
-                .setImgFooter("第 "+(i+1)+" 页");
-        pages.appendChild(item.getHTMLNode());
+    function injectData(serviceData) {
+        var pages = document.querySelector("#pages");
+        if(serviceData.result === 0) {
+            var dataAry = serviceData.data;
+            for(var i=0; i<dataAry.length; i++) {
+                var dataItem = dataAry[i];
+                var viewItem = new IndexPageItem();
+                viewItem.setTitle(dataItem.title)
+                        .setImgSrc(dataItem.imgSrc)
+                        .setDesc(dataItem.desc)
+                        .setImgFooter(dataItem.imgFooter);
+                pages.appendChild(viewItem.getHTMLNode());
+            }
+        } else {
+            pages.appendChild((new IndexPageItem()).setTitle("服务器错误\n页面加载失败").getHTMLNode());
+        }
     }
-
     function initSwipe() {
         var page_container = document.querySelector("#pages_container");
         page_container.setAttribute("style",window.innerHeight+"px");
@@ -49,7 +55,21 @@
             slideHeight : window.innerHeight
         });
     }
-    initSwipe();
+    //request service data
+    (function($){
+        $.ajax({
+            url : '../index_data',
+            type : 'POST',
+            dataType : 'json',
+            success : function(serviceData) {
+                injectData(serviceData);
+                initSwipe();
+            },
+            complete : function(xhr, err) {
+                console.log(err);
+            }
+        });
+    })(jQuery);
 
 </script>
 </html>
