@@ -108,6 +108,9 @@ function PageManager_jump(pageName, param) {
     }
 };
 
+var AnimDuration = 500;
+var AnimInterpolate = 'swing';
+
 function animLeftOutRemove($obj, container) {
     $obj.css({
         position : 'absolute',
@@ -117,7 +120,7 @@ function animLeftOutRemove($obj, container) {
     });
     $obj.animate({
         left : -container.offsetWidth + "px"
-    }, "swing", function(){
+    }, AnimDuration, AnimInterpolate, function(){
         $obj.remove();
     });
 }
@@ -130,7 +133,7 @@ function animRightOutRemove($obj, container) {
     });
     $obj.animate({
         left : container.offsetWidth + "px"
-    }, "swing", function(){
+    }, AnimDuration, AnimInterpolate, function(){
         $obj.remove();
     });
 }
@@ -144,7 +147,7 @@ function animRightInAdd($obj, container) {
     $(container).append($obj);
     $obj.animate({
         left : '0px'
-    }, "swing");
+    }, AnimDuration, AnimInterpolate);
 }
 function animLeftInAdd($obj, container) {
     $obj.css({
@@ -156,7 +159,7 @@ function animLeftInAdd($obj, container) {
     $(container).append($obj);
     $obj.animate({
         left : '0px'
-    }, "swing");
+    }, AnimDuration, AnimInterpolate);
 }
 
 /**

@@ -19,7 +19,10 @@ function IndexPageItem() {
             "   <div class='index-img-container'>" +
             "       <img class='index-img'></img>" +
             "   </div>" +
-            "   <div class='index-img-footer'></div>" +
+            "   <div class='index-img-footer'>" +
+            "       <div class='index-img-footer-line'></div>" +
+            "       <span class='index-img-footer-tag'></span>" +
+            "   </div>" +
             "   <div class='index-title'></div>" +
             "   <div class='index-desc'></div>" +
             "   <div class='index-div-line-container'>" +
@@ -28,7 +31,7 @@ function IndexPageItem() {
             "</div>");
         this._$ele = $element;
         this._$indexImg = $element.find(".index-img");
-        this._$indexImgFooter = $element.find('.index-img-footer');
+        this._$indexImgFooter = $element.find('.index-img-footer-tag');
         this._$indexTitle = $element.find(".index-title");
         this._$indexDesc = $element.find(".index-desc");
         /** 设置跳转点击事件 */
@@ -171,7 +174,7 @@ function IndexPageView() {
         this._$ele = $(
             "<div class='index-page-view-container'>" +
             "   <div id='page_body'></div>" +
-            "   <div class='index-page-title-bar'></div>" +
+            "   <div class='index-page-title-bar vertical-black-gradient'></div>" +
             "</div>");
         this._$pageBody = this._$ele.find('#page_body');
     } else {

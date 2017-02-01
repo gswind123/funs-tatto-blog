@@ -2,8 +2,12 @@
  * 用来管理移动端用户动作事件
  */
 
+var clickTimer =
+
 window.MotionUtil = {
     /**
+     * 为可以滑动的组件设置点击事件
+     * 这个点击事件会在用户拖动手指时不触发,做了双击保护
      * @param obj 事件接收对象
      * @param onClick function,this是obj
      */

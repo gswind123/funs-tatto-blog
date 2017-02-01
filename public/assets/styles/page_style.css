@@ -17,12 +17,24 @@
 .index-img-footer {
     width:100%;
     height:auto;
+}
+.index-img-footer-line {
+    width:100%;
+    height:3px;
     background-color:#a98955;
-    text-align: center;
+}
+.index-img-footer-tag {
+    display: table;
+    width:auto;
+    height:auto;
+    margin-left:auto;
+    margin-right:auto;
+    padding-left:6px;
+    padding-right:6px;
+    padding-bottom: 3px;
     font-size: 10px;
     color:#ffffff;
-    padding-top: 1%;
-    padding-bottom: 1%;
+    background-color:#a98955;
 }
 .index-title {
     font-size : 32px;
@@ -58,10 +70,8 @@
 }
 .index-page-title-bar {
     width:100%;
-    height:8%;
-    opacity:0.27;
+    height:6%;
     position:fixed;
-    background-color:#000000;
     top:0px;
 }
 .index-page-view-container {
@@ -71,5 +81,8 @@
     top:0;
     background-color:#3f3f3f;
 }
-
-
+.vertical-black-gradient {
+    background-image:-moz-linear-gradient(top, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.15) 70%, rgba(0,0,0,0) 100%);
+    background-image:-o-linear-gradient(top, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.15) 70%, rgba(0,0,0,0) 100%);
+    background-image:-webkit-linear-gradient(top, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.15) 70%, rgba(0,0,0,0) 100%);
+}
