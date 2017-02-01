@@ -56,3 +56,20 @@
     margin-left:auto;
     margin-right:auto;
 }
+.index-page-title-bar {
+    width:100%;
+    height:8%;
+    opacity:0.27;
+    position:fixed;
+    background-color:#000000;
+    top:0px;
+}
+.index-page-view-container {
+    width:100%;
+    height:100%;
+    position:fixed;
+    top:0;
+    background-color:#3f3f3f;
+}
+
+

@@ -7,70 +7,36 @@
     <link rel="stylesheet" href="assets/styles/page_style.css" />
 </head>
 <body style="overflow:hidden">
-    <div id="pages_container" class="swipe-vertical">
-        <div class="swipe-vertical-wrap" id="pages">
-            <!-- add element pages here-->
-        </div>
+    <div>
+        <div id="container" style='width:100%;height:100%;'></div>
     </div>
 </body>
-<script src="assets/libs/swipe.js"></script>
-<script src="assets/libs/jquery.min.js"></script>
 <script type="text/javascript">
     var scale = 1 / window.devicePixelRatio;
     document.querySelector('meta[name="viewport"]').setAttribute('content','initial-scale=' + scale + ', maximum-scale=' + scale + ', minimum-scale=' + scale + ', user-scalable=no');
 </script>
-<script src="assets/views/index_page_item.js"></script>
+<!--Util Scripts-->
+<script src="assets/libs/jquery.min.js"></script>
+<script src="assets/libs/director.min.js"></script>
+<script src="assets/libs/swipe.js"></script>
+<script src="assets/utils/common_util.js"></script>
+<script src="assets/utils/motion_util.js"></script>
+<script src="assets/utils/page_manager.js"></script>
+<!--Business Scripts-->
+<script src="assets/views/index_page_view.js"></script>
+
 <script>
-    function injectData(serviceData) {
-        var pages = document.querySelector("#pages");
-        if(serviceData.result === 0) {
-            var dataAry = serviceData.data;
-            for(var i=0; i<dataAry.length; i++) {
-                var dataItem = dataAry[i];
-                var viewItem = new IndexPageItem();
-                viewItem.setTitle(dataItem.title)
-                        .setImgSrc(dataItem.imgSrc)
-                        .setDesc(dataItem.desc)
-                        .setImgFooter(dataItem.imgFooter);
-                pages.appendChild(viewItem.getHTMLNode());
-            }
-        } else {
-            pages.appendChild((new IndexPageItem()).setTitle("服务器错误\n页面加载失败").getHTMLNode());
-        }
-    }
-    function initSwipe() {
-        var page_container = document.querySelector("#pages_container");
-        page_container.setAttribute("style",window.innerHeight+"px");
-
-        var swipe = new Swipe(page_container,{
-            startSlide: 0,
-            speed: 400,
-            autoStart:false,
-            orientation:"vertical",
-            auto: 0,
-            draggable: true,
-            continuous: false,
-            disableScroll: true,
-            stopPropagation: false,
-            slideHeight : window.innerHeight
-        });
-    }
-    //request service data
-    (function($){
-        $.ajax({
-            url : '../index_data',
-            type : 'POST',
-            dataType : 'json',
-            success : function(serviceData) {
-                injectData(serviceData);
-                initSwipe();
-            },
-            complete : function(xhr, err) {
-                console.log(err);
-            }
-        });
-    })(jQuery);
-
+    var $ = window.jQuery;
+    var container = document.querySelector('#container');
+    var pageMgr = new PageManager(container, {
+        defaultPage : 'index_page'
+    });
+    pageMgr.register('index_page', IndexPageView.getProvider());
+    pageMgr.register('blog_page', function(savedInstance, param) {
+        var content = (param && param.content) || "这是没办法的默认内容";
+        return $("<div>"+content+"</div>").get(0);
+    });
+    pageMgr.init();
 </script>
 </html>
 
