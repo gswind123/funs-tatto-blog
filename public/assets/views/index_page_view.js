@@ -44,6 +44,10 @@ function IndexPageItem() {
     }
 }
 
+function convertStrToHTML(str) {
+    return str.replace('\n', '<br />');
+}
+
 IndexPageItem.prototype.getHTMLNode = function() {
     return this._$ele.get(0);
 };
@@ -52,15 +56,15 @@ IndexPageItem.prototype.setImgSrc = function(url) {
     return this;
 };
 IndexPageItem.prototype.setTitle = function(title) {
-    this._$indexTitle.html(title);
+    this._$indexTitle.html(convertStrToHTML(title));
     return this;
 };
 IndexPageItem.prototype.setDesc = function(desc) {
-    this._$indexDesc.html(desc);
+    this._$indexDesc.html(convertStrToHTML(desc));
     return this;
 };
 IndexPageItem.prototype.setImgFooter = function(text) {
-    this._$indexImgFooter.html(text);
+    this._$indexImgFooter.html(convertStrToHTML(text));
     return this;
 };
 

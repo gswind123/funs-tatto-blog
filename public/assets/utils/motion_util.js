@@ -1,8 +1,30 @@
 /**
  * 用来管理移动端用户动作事件
  */
+var DoubleClickInter = 800;
+var clickTimer = {
+    _prevTime : (new Date()).getTime(),
+    isDoubleClick : function() {
+        var curTime = (new Date()).getTime();
+        var res = (curTime - this._prevTime) < DoubleClickInter;
+        this._prevTime = curTime;
+        return res;
+    }
+};
 
-var clickTimer =
+function isMouseEvent(e) {
+    return /^mouse/.test(e.type);
+}
+
+function wrapTouchModeEvent(event) {
+    var touches;
+    if(isMouseEvent(event)) {
+        touches = event;
+    } else {
+        touches = event.touches[0];
+    }
+    return touches;
+}
 
 window.MotionUtil = {
     /**
@@ -20,21 +42,25 @@ window.MotionUtil = {
             hasMoved = false;
         }
         function start(event) {
+            event = wrapTouchModeEvent(event);
             isStart = true;
-            startPoint.x = event.screenX;
-            startPoint.y = event.screenY;
+            startPoint.x = event.pageX;
+            startPoint.y = event.pageY;
         }
         function move(event) {
-            if(isStart) {
-                var delta_x = event.screenX - startPoint.x,
-                    delta_y = event.screenY - startPoint.y;
+            if(isStart && !hasMoved) {
+                event = wrapTouchModeEvent(event);
+                var delta_x = event.pageX - startPoint.x,
+                    delta_y = event.pageY - startPoint.y;
                 var delta = delta_x * delta_x + delta_y * delta_y;
                 hasMoved = delta > 100; //移动超过10像素则认为是移动过
             }
         }
         function end(event) {
             if(isStart && !hasMoved) {
-                onClick.call(obj);
+                if(!clickTimer.isDoubleClick()) {
+                    onClick.call(obj);
+                }
             }
             reset();
         }
