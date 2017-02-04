@@ -21,14 +21,15 @@ function PageManager(container, options) {
      * this._backStack = [
      *     {
      *         pageName : 'page1',
-     *         node : <HTML Node>
+     *         prevNode : <HTML node>,
+     *         provider : <NodeProvider>
      *     }
      * ]
      */
     this._backStack = [];
 
     /**
-     * this._pageMap = {
+     * this._pageProviderMap = {
      *     pageName : nodeProvider
      * }
      */
@@ -38,10 +39,19 @@ function PageManager(container, options) {
 /**
  * 注册一个页面的实例生成器,以备跳转到这个页面时使用
  * @param pageName
- * @param nodeProvider :
- * function(prevInstance, param) 返回一个用来插入到容器中的HTML节点,表示pageName对应的页面内容
- * 参数prevInstance,为上次已经生成了的这个页面的HTML节点;如果页面实例还没生成过,则为null
- * 参数param,为本次跳转时带的参数
+ * @param nodeProvider {
+ *
+ *     getNode(prevInstance, param) 返回一个用来插入到容器中的HTML节点,表示pageName对应的页面内容
+ *     参数prevInstance,为上次已经生成了的这个页面的HTML节点;如果页面实例还没生成过,则为null
+ *     参数param,为本次跳转时带的参数
+ *
+ *     getEnterAnimation(pageName, isNewPage) return function($obj, container) 用上一个页面的pageName生成进入动画,
+ *     isNewPage表示本次动作是否要跳转到一个新页面,如果是false,则意味着本次跳转是回到一个旧页面
+ *
+ *     getExitAnimation(pageName, isNewPage) return function($obj, container) 用下一个页面的pageName生成退出动画,
+ *     isNewPage表示本次动作是否要跳转到一个新页面,如果是false,则意味着本次跳转是回到一个旧页面
+ * }
+ *
  */
 PageManager.prototype.register = function(pageName, nodeProvider) {
     this._pageProviderMap[pageName] = nodeProvider;
@@ -87,31 +97,50 @@ function PageManager_popPageFromStack(pageName) {
 //private
 function PageManager_jump(pageName, param) {
     var nodeProvider = this._pageProviderMap[pageName];
-    if(!nodeProvider) {
+    if(!nodeProvider || !nodeProvider.getNode || typeof(nodeProvider.getNode) !== 'function') {
         //页面未注册,不跳转
         return ;
     }
     var prevTop = PageManager_getPageOnTop.call(this);
+    var prevProvider = null;
+    var prevPageName = null;
+    if(prevTop) {
+        prevProvider = prevTop.provider;
+        prevPageName = prevTop.pageName;
+    }
+
     var targetItem = PageManager_popPageFromStack.call(this, pageName);
+    var isNeedAnim,isNewPage,enterAnimation,exitAnimation,newPageNode;
     if(!targetItem) { //原页面不存在,创建一个新的插入后退栈,并跳转
         var stackItem = {
             pageName : pageName,
-            node : nodeProvider(null, param)
+            prevNode : nodeProvider.getNode(null, param),
+            provider : nodeProvider
         };
         this._backStack.push(stackItem);
-        var isNeedAnim = !!prevTop; //如果原先已经有个页面,则需要切换动画
-        switchPageHorizontally(this._container, stackItem.node, isNeedAnim, "RIFO");
+        newPageNode = stackItem.prevNode;
+        isNeedAnim = !!prevTop; //如果原先已经有个页面,则需要切换动画
+        isNewPage = true;
     } else { //原页面存在,更新并返回到原页面
-        targetItem.node = nodeProvider(targetItem.node, param);
-        var isNeedAnim = (targetItem != prevTop); //如果需要移除原先的页面,则需要切换动画
-        switchPageHorizontally(this._container, targetItem.node, isNeedAnim, "LIRO");
+        newPageNode = nodeProvider.getNode(targetItem.prevNode, param);
+        isNeedAnim = (targetItem != prevTop); //如果需要移除原先的页面,则需要切换动画
+        isNewPage = false;
+        targetItem.prevNode = newPageNode;
     }
+    if(nodeProvider.getEnterAnimation) {
+        enterAnimation = nodeProvider.getEnterAnimation(prevPageName, isNewPage);
+    }
+    if(prevProvider && prevProvider.getExitAnimation) {
+        exitAnimation = prevProvider.getExitAnimation(pageName, isNewPage);
+    }
+    switchPageAnim(this._container, newPageNode, isNeedAnim, isNewPage,
+        enterAnimation, exitAnimation);
 };
 
 var AnimDuration = 500;
 var AnimInterpolate = 'swing';
 
-function animLeftOutRemove($obj, container) {
+PageManager.animLeftOutRemove = function($obj, container) {
     $obj.css({
         position : 'absolute',
         left : '0px',
@@ -124,7 +153,7 @@ function animLeftOutRemove($obj, container) {
         $obj.remove();
     });
 }
-function animRightOutRemove($obj, container) {
+PageManager.animRightOutRemove = function($obj, container) {
     $obj.css({
         position : 'absolute',
         left : '0px',
@@ -137,7 +166,7 @@ function animRightOutRemove($obj, container) {
         $obj.remove();
     });
 }
-function animRightInAdd($obj, container) {
+PageManager.animRightInAdd = function($obj, container) {
     $obj.css({
         position : 'absolute',
         left : container.offsetWidth + "px",
@@ -149,7 +178,7 @@ function animRightInAdd($obj, container) {
         left : '0px'
     }, AnimDuration, AnimInterpolate);
 }
-function animLeftInAdd($obj, container) {
+PageManager.animLeftInAdd = function($obj, container) {
     $obj.css({
         position : 'absolute',
         left : -container.offsetWidth + "px",
@@ -163,21 +192,25 @@ function animLeftInAdd($obj, container) {
 }
 
 /**
- * @param direction LIRO 左进右出 | RILO 右进左出
+ * @param isNeedAnim 是否需要动画
+ * @param isNewPage 本次切换是否是打开新页面(否则是回到旧页面)
+ * @param enterAnimation 进入动画函数
+ * @param exitAnimation 退出动画函数
  */
-function switchPageHorizontally(container, newPageNode, isNeedAnim, direction) {
+function switchPageAnim(container, newPageNode, isNeedAnim, isNewPage, enterAnimation, exitAnimation) {
+    if(!enterAnimation) {
+        enterAnimation = isNewPage ? PageManager.animRightInAdd:PageManager.animLeftInAdd;
+    }
+    if(!exitAnimation) {
+        exitAnimation = exitAnimation || isNewPage ? PageManager.animLeftOutRemove:PageManager.animRightOutRemove;
+    }
     var $ = window.jQuery;
     var $container = $(container);
     var $removePage = $container.children('div');
     var $addPage = $('<div></div>').append(newPageNode);
     if(isNeedAnim) {
-        if(direction === "LIRO") {
-            animLeftInAdd($addPage, container);
-            animRightOutRemove($removePage, container);
-        } else {
-            animLeftOutRemove($removePage, container);
-            animRightInAdd($addPage, container);
-        }
+        enterAnimation($addPage, container);
+        exitAnimation($removePage, container);
     } else {
         $addPage.css({
             position : 'absolute',

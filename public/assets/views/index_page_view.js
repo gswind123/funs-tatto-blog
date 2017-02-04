@@ -190,8 +190,8 @@ IndexPageView.prototype.getHTMLNode = function() {
     return this._$ele.get(0);
 };
 
-IndexPageView.getProvider = function() {
-    return function(savedInstance) {
+var nodeProvider = {
+    getNode:function(savedInstance) {
         if(savedInstance) {
             return savedInstance;
         }
@@ -205,7 +205,27 @@ IndexPageView.getProvider = function() {
             indexPageSwipe.notifyError("服务器正在维护\n请稍候重试");
         });
         return indexPageView.getHTMLNode();
+    },
+
+    getEnterAnimation : function(pageName, isNewPage) {
+        if(isNewPage) {
+            return PageManager.animLeftInAdd;
+        } else {
+            return PageManager.animRightInAdd;
+        }
+    },
+
+    getExitAnimation : function(pageName, isNewPage) {
+        if(isNewPage) {
+            return PageManager.animRightOutRemove;
+        } else {
+            return PageManager.animLeftOutRemove;
+        }
     }
+};
+
+IndexPageView.getProvider = function() {
+    return nodeProvider;
 };
 
 window.IndexPageView = IndexPageView;

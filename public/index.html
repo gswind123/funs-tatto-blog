@@ -28,9 +28,11 @@
         defaultPage : 'index_page'
     });
     pageMgr.register('index_page', IndexPageView.getProvider());
-    pageMgr.register('blog_page', function(savedInstance, param) {
-        var content = (param && param.content) || "这是没办法的默认内容";
-        return $("<div>"+content+"</div>").get(0);
+    pageMgr.register('blog_page', {
+        getNode : function(savedInstance, param) {
+            var content = (param && param.content) || "这是没办法的默认内容";
+            return $("<div>"+content+"</div>").get(0);
+        }
     });
     pageMgr.init();
 </script>
