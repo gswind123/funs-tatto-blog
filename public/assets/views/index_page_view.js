@@ -23,7 +23,9 @@ function IndexPageItem() {
             "       <div class='index-img-footer-line'></div>" +
             "       <span class='index-img-footer-tag'></span>" +
             "   </div>" +
-            "   <div class='index-title'></div>" +
+            "   <div class='index-title'>" +
+            "       <div class='index-title-text'></div>" +
+            "   </div>" +
             "   <div class='index-desc'></div>" +
             "   <div class='index-div-line-container'>" +
             "       <div class='index-div-line'></div>" +
@@ -32,7 +34,7 @@ function IndexPageItem() {
         this._$ele = $element;
         this._$indexImg = $element.find(".index-img");
         this._$indexImgFooter = $element.find('.index-img-footer-tag');
-        this._$indexTitle = $element.find(".index-title");
+        this._$indexTitle = $element.find(".index-title-text");
         this._$indexDesc = $element.find(".index-desc");
         /** 设置跳转点击事件 */
         var self = this;
@@ -44,10 +46,6 @@ function IndexPageItem() {
     }
 }
 
-function convertStrToHTML(str) {
-    return str.replace('\n', '<br />');
-}
-
 IndexPageItem.prototype.getHTMLNode = function() {
     return this._$ele.get(0);
 };
@@ -56,15 +54,15 @@ IndexPageItem.prototype.setImgSrc = function(url) {
     return this;
 };
 IndexPageItem.prototype.setTitle = function(title) {
-    this._$indexTitle.html(convertStrToHTML(title));
+    this._$indexTitle.html(FormatUtil.str2html(title));
     return this;
 };
 IndexPageItem.prototype.setDesc = function(desc) {
-    this._$indexDesc.html(convertStrToHTML(desc));
+    this._$indexDesc.html(FormatUtil.str2html(desc));
     return this;
 };
 IndexPageItem.prototype.setImgFooter = function(text) {
-    this._$indexImgFooter.html(convertStrToHTML(text));
+    this._$indexImgFooter.html(FormatUtil.str2html(text));
     return this;
 };
 
@@ -175,11 +173,13 @@ function IndexPageSwipe_update() {
 function IndexPageView() {
     if(window.jQuery) {
         var $ = window.jQuery;
+        var $titleBar = new FunsTitleBar();
         this._$ele = $(
             "<div class='index-page-view-container'>" +
             "   <div id='page_body'></div>" +
-            "   <div class='index-page-title-bar vertical-black-gradient'></div>" +
             "</div>");
+        $titleBar.setRightBtnImg('./assets/images/funs-assist-icon.png').setLeftBtnShow(false);
+        this._$ele.append($titleBar.getHTMLNode());
         this._$pageBody = this._$ele.find('#page_body');
     } else {
         LogUtil.e("jQuery not support");
@@ -205,22 +205,6 @@ var nodeProvider = {
             indexPageSwipe.notifyError("服务器正在维护\n请稍候重试");
         });
         return indexPageView.getHTMLNode();
-    },
-
-    getEnterAnimation : function(pageName, isNewPage) {
-        if(isNewPage) {
-            return PageManager.animLeftInAdd;
-        } else {
-            return PageManager.animRightInAdd;
-        }
-    },
-
-    getExitAnimation : function(pageName, isNewPage) {
-        if(isNewPage) {
-            return PageManager.animRightOutRemove;
-        } else {
-            return PageManager.animLeftOutRemove;
-        }
     }
 };
 

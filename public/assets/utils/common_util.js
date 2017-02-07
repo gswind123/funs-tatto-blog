@@ -32,3 +32,25 @@ window.URLUtil = {
         return res;
     }
 };
+
+window.FormatUtil = {
+    str2html : function(str) {
+        return str.replace('\n', '<br />');
+    }
+};
+
+window.WindowUtil = {
+    /**
+     * 根据当前页面的对角线长度,重置rem单位的基准像素值
+     * NOTE: 在对角线736.3px时,font-size是10px;二者等比增大
+     */
+    adjustRemBaseUnit: function () {
+        if(window.jQuery) {
+            var w = window.innerWidth, h = window.innerHeight;
+            var diagonal = Math.sqrt(w*w+h*h);
+            var htmlFontSize = Math.round(10 * (diagonal/736.3)) ;
+            var $ = window.jQuery;
+            $('html').css('font-size', htmlFontSize+'px');
+        }
+    }
+};

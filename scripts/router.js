@@ -8,6 +8,11 @@ var routerTable = [
         name : '/index_data',
         path : './service/index_data.js',
         type : 'use'
+    },
+    {
+        name : '/blog_content_search',
+        path : './service/blog_content_search.js',
+        type : 'use'
     }
 ];
 

@@ -137,7 +137,7 @@ function PageManager_jump(pageName, param) {
         enterAnimation, exitAnimation);
 };
 
-var AnimDuration = 500;
+var AnimDuration = 333;
 var AnimInterpolate = 'swing';
 
 PageManager.animLeftOutRemove = function($obj, container) {
