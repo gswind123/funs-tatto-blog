@@ -4,6 +4,26 @@
  * require('director.min.js')
  * require('utils/common_util.js');
  * Created by yw_sun on 2017/01/31
+ *
+ * 如何使用:
+ * 1. 初始化一个PageManager实例mgr
+ * 2. 调用mgr.register(pageName, NodeProvider)
+ * 3. 执行mgr.init()
+ * 4. 当url发生变化,或者调用PageManager#jumpToPage时,如果页面名字已经注册,则前端路由到对应页面
+ *
+ * 关于NodeProvider:
+ * 当注册一个页面时,需要提供一个NodeProvider
+ *
+ *  NodeProvider#getNode(prevNode, param)
+ *      根据上一次的Node实例和页面参数,生成一个页面实例
+ *      这个方法用来更新Node,如果是通过PageManager#jumpToPage跳转,则param为其所带的参数param
+ *      如果是新生成一个页面,则prevNode为空
+ *
+ *  关于Node :
+ *      Node必须提供一个getHTMLNode方法,用来返回渲染页面的额DOM;
+ *      当切换到一个node时,会调用它的onAttach方法;
+ *      当一个node被从返回栈清除时,会调用它的onDetach方法;
+ *
  */
 
 /**
@@ -21,7 +41,7 @@ function PageManager(container, options) {
      * this._backStack = [
      *     {
      *         pageName : 'page1',
-     *         prevNode : <HTML node>,
+     *         prevNode : <Node>,
      *         provider : <NodeProvider>
      *     }
      * ]
@@ -41,7 +61,8 @@ function PageManager(container, options) {
  * @param pageName
  * @param nodeProvider {
  *
- *     getNode(prevInstance, param) 返回一个用来插入到容器中的HTML节点,表示pageName对应的页面内容
+ *     getNode(prevInstance, param) 返回一个Node,表示pageName对应的页面内容
+ *     Node应当具备一个getHTMLNode方法,用来生成用渲染视图的html DOM
  *     参数prevInstance,为上次已经生成了的这个页面的HTML节点;如果页面实例还没生成过,则为null
  *     参数param,为本次跳转时带的参数
  *
@@ -82,9 +103,32 @@ function PageManager_popPageFromStack(pageName) {
     if(!targetItem) {
         return null;
     } else { /** 将需要的页面弹出栈,返回目标页面的后退栈节点 */
+        for(var i = index+1; i<backStack.length; i++) {
+            var prevNode = backStack[i].prevNode;
+            if(prevNode.onDetach) {
+                prevNode.onDetach();
+            }
+        }
         backStack.length = index+1;
         return targetItem;
     }
+}
+
+/**
+ * 验证一个Node是否合法
+ * 只有具备getHTMLNode方法,才是一个合法Node
+ * @return true 合法 | false 不合法
+ */
+function isValidNode(pageName, node) {
+    if(!node.getHTMLNode) {
+        LogUtil.e({
+            error : "Node from [getNode] should support [getHTMLNode] in switchPageAnim",
+            cls : "PageManager",
+            pageName : pageName
+        });
+        return false;
+    }
+    return true;
 }
 
 /**
@@ -112,9 +156,13 @@ function PageManager_jump(pageName, param) {
     var targetItem = PageManager_popPageFromStack.call(this, pageName);
     var isNeedAnim,isNewPage,enterAnimation,exitAnimation,newPageNode;
     if(!targetItem) { //原页面不存在,创建一个新的插入后退栈,并跳转
+        var node = nodeProvider.getNode(null, param);
+        if(!isValidNode(pageName, node)) {
+            return ;
+        }
         var stackItem = {
             pageName : pageName,
-            prevNode : nodeProvider.getNode(null, param),
+            prevNode : node,
             provider : nodeProvider
         };
         this._backStack.push(stackItem);
@@ -123,6 +171,9 @@ function PageManager_jump(pageName, param) {
         isNewPage = true;
     } else { //原页面存在,更新并返回到原页面
         newPageNode = nodeProvider.getNode(targetItem.prevNode, param);
+        if(!isValidNode(targetItem.pageName, newPageNode)) {
+            return ;
+        }
         isNeedAnim = (targetItem != prevTop); //如果需要移除原先的页面,则需要切换动画
         isNewPage = false;
         targetItem.prevNode = newPageNode;
@@ -132,6 +183,9 @@ function PageManager_jump(pageName, param) {
     }
     if(prevProvider && prevProvider.getExitAnimation) {
         exitAnimation = prevProvider.getExitAnimation(pageName, isNewPage);
+    }
+    if(newPageNode.onAttach) {
+        newPageNode.onAttach();
     }
     switchPageAnim(this._container, newPageNode, isNeedAnim, isNewPage,
         enterAnimation, exitAnimation);
@@ -192,6 +246,7 @@ PageManager.animLeftInAdd = function($obj, container) {
 }
 
 /**
+ * @param newPageNode 拥有getHTMLNode方法的Node
  * @param isNeedAnim 是否需要动画
  * @param isNewPage 本次切换是否是打开新页面(否则是回到旧页面)
  * @param enterAnimation 进入动画函数
@@ -207,7 +262,7 @@ function switchPageAnim(container, newPageNode, isNeedAnim, isNewPage, enterAnim
     var $ = window.jQuery;
     var $container = $(container);
     var $removePage = $container.children('div');
-    var $addPage = $('<div></div>').append(newPageNode);
+    var $addPage = $('<div></div>').append(newPageNode.getHTMLNode());
     if(isNeedAnim) {
         enterAnimation($addPage, container);
         exitAnimation($removePage, container);

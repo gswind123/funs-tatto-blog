@@ -542,7 +542,6 @@
 
 
             setElementAmount(element, (slides.length * getBoundAmount() * 2) + 'px') ;
-            console.log(getBoundAmount());
 
             // stack elements
             var pos = slides.length;

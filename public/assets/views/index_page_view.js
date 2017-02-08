@@ -176,11 +176,11 @@ function IndexPageView() {
         var $titleBar = new FunsTitleBar();
         this._$ele = $(
             "<div class='index-page-view-container'>" +
-            "   <div id='page_body'></div>" +
+            "   <div class='index-page-body'></div>" +
             "</div>");
-        $titleBar.setRightBtnImg('./assets/images/funs-assist-icon.png').setLeftBtnShow(false);
+        $titleBar.setTitle("饭饭").setRightBtnImg('./assets/images/funs-assist-icon.png').setLeftBtnShow(false);
         this._$ele.append($titleBar.getHTMLNode());
-        this._$pageBody = this._$ele.find('#page_body');
+        this._$pageBody = this._$ele.find('.index-page-body');
     } else {
         LogUtil.e("jQuery not support");
     }
@@ -204,7 +204,7 @@ var nodeProvider = {
         },function() {
             indexPageSwipe.notifyError("服务器正在维护\n请稍候重试");
         });
-        return indexPageView.getHTMLNode();
+        return indexPageView;
     }
 };
 

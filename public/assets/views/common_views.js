@@ -3,13 +3,18 @@
  * Created by yw_sun on 2017/02/06
  */
 
+/**
+ * 页面顶部导航栏
+ */
 function FunsTitleBar() {
     if(window.jQuery) {
         var $ = window.jQuery;
         var $element = $(
             "<div class='funs-title-bar'>" +
             "   <div class='funs-title-bar-bkg vertical-black-gradient'></div>" +
-            "   <span class='funs-title-bar-text'></span>" +
+            "   <div class='funs-title-bar-text-container'>" +
+            "       <span class='funs-title-bar-text'></span>" +
+            "   </div>" +
             "   <div class='funs-title-bar-left-btn'>" +
             "       <img class='funs-title-bar-left-btn-img'></img>" +
             "   </div>" +
