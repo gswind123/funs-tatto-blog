@@ -11,16 +11,19 @@
         <div id="container" style='position:fixed;left:0;top:0;right:0;bottom:0;width:100%;height:100%;'></div>
     </div>
 </body>
-<!--Util Scripts-->
+<!--Base层工具脚本-->
 <script src="assets/libs/jquery.min.js"></script>
 <script src="assets/libs/director.min.js"></script>
 <script src="assets/libs/swipe.js"></script>
+<!--中间层工具脚本-->
+<script src="assets/utils/animation_util.js"></script>
 <script src="assets/utils/common_util.js"></script>
 <script src="assets/utils/motion_util.js"></script>
 <script src="assets/utils/page_manager.js"></script>
 <script src="assets/views/common_views.js"></script>
-<!--Business Scripts-->
+<!--业务脚本-->
 <script src="assets/views/index_page_view.js"></script>
+<script src="assets/views/blog_page_view.js"></script>
 
 <script>
     var $ = window.jQuery;
@@ -39,22 +42,7 @@
         defaultPage : 'index_page'
     });
     pageMgr.register('index_page', IndexPageView.getProvider());
-    pageMgr.register('blog_page', {
-        getNode : function(savedInstance, param) {
-            return {
-                content : (param && param.content) || "这是没办法的默认内容",
-                getHTMLNode : function() {
-                    return $("<div>"+this.content+"</div>").get(0);
-                },
-                onAttach : function() {
-                    console.log("blog page attach");
-                },
-                onDetach : function() {
-                    console.log("blog page detach");
-                }
-            };
-        }
-    });
+    pageMgr.register('blog_page', BlogPageView.getProvider());
     pageMgr.init();
 </script>
 </html>

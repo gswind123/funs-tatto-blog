@@ -1,3 +1,10 @@
+/**
+ * 一些分散的简单的基本功能工具类
+ * Created by yw_sun on 2017/02/10
+ */
+
+(function(){
+
 window.LogUtil = {
     e : function(exception) {
         console.log(exception);
@@ -54,3 +61,5 @@ window.WindowUtil = {
         }
     }
 };
+
+})();

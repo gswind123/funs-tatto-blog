@@ -1,10 +1,13 @@
 /**
  * 用来管理移动端用户动作事件
  */
+
+(function() {
+
 var DoubleClickInter = 800;
 var clickTimer = {
-    _prevTime : (new Date()).getTime(),
-    isDoubleClick : function() {
+    _prevTime: (new Date()).getTime(),
+    isDoubleClick: function () {
         var curTime = (new Date()).getTime();
         var res = (curTime - this._prevTime) < DoubleClickInter;
         this._prevTime = curTime;
@@ -18,7 +21,7 @@ function isMouseEvent(e) {
 
 function wrapTouchModeEvent(event) {
     var touches;
-    if(isMouseEvent(event)) {
+    if (isMouseEvent(event)) {
         touches = event;
     } else {
         touches = event.touches[0];
@@ -33,22 +36,25 @@ window.MotionUtil = {
      * @param obj 事件接收对象
      * @param onClick function,this是obj
      */
-    addOnClickListener : function(obj, onClick) {
+    addOnClickListener: function (obj, onClick) {
         var isStart = false;
         var startPoint = {};
         var hasMoved = false;
+
         function reset() {
             isStart = false;
             hasMoved = false;
         }
+
         function start(event) {
             event = wrapTouchModeEvent(event);
             isStart = true;
             startPoint.x = event.pageX;
             startPoint.y = event.pageY;
         }
+
         function move(event) {
-            if(isStart && !hasMoved) {
+            if (isStart && !hasMoved) {
                 event = wrapTouchModeEvent(event);
                 var delta_x = event.pageX - startPoint.x,
                     delta_y = event.pageY - startPoint.y;
@@ -56,17 +62,20 @@ window.MotionUtil = {
                 hasMoved = delta > 100; //移动超过10像素则认为是移动过
             }
         }
+
         function end(event) {
-            if(isStart && !hasMoved) {
-                if(!clickTimer.isDoubleClick()) {
+            if (isStart && !hasMoved) {
+                if (!clickTimer.isDoubleClick()) {
                     onClick.call(obj);
                 }
             }
             reset();
         }
+
         function cancel(event) {
             reset();
         }
+
         obj.addEventListener('mousedown', start);
         obj.addEventListener('touchstart', start);
         obj.addEventListener('mousemove', move);
@@ -77,3 +86,5 @@ window.MotionUtil = {
         obj.addEventListener('mouseout', cancel);
     }
 };
+
+})();

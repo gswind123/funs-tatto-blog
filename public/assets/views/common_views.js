@@ -3,6 +3,9 @@
  * Created by yw_sun on 2017/02/06
  */
 
+
+(function() {
+
 /**
  * 页面顶部导航栏
  */
@@ -65,3 +68,5 @@ FunsTitleBar.prototype.getHTMLNode = function() {
 };
 
 window.FunsTitleBar = FunsTitleBar;
+
+})();

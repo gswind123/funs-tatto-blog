@@ -23,64 +23,74 @@
  *      Node必须提供一个getHTMLNode方法,用来返回渲染页面的额DOM;
  *      当切换到一个node时,会调用它的onAttach方法;
  *      当一个node被从返回栈清除时,会调用它的onDetach方法;
+ *      通过定制Node,可以存储一些页面状态
  *
+ *  NodeProvider#getEnterAnimation(prevPageName, isNewPage)
+ *
+ *  NodeProvider#getExitAnimation(prevPageName, isNewPage)
+ *
+ *  关于Animation:
+ *      function($curNode, container, Node)
+ *      curNode为当前页面的HTML DOM, container为页面容器, Node为页面的Node对象
  */
+
+(function() {
 
 /**
  * @param container 进行页面切换效果的DOM
  * @param options 配置参数
  * {
- *     defaultPage : <pageName>, //当路径匹配不到时默认跳转到的页面
+ *    defaultPage : <pageName>, //当路径匹配不到时默认跳转到的页面
  * }
  */
 function PageManager(container, options) {
     this._container = container;
     this._options = options || {};
 
-    /**
-     * this._backStack = [
-     *     {
-     *         pageName : 'page1',
-     *         prevNode : <Node>,
-     *         provider : <NodeProvider>
-     *     }
-     * ]
-     */
+    /**========================
+     this._backStack = [
+          {
+            pageName : 'page1',
+            prevNode : <Node>,
+            provider : <NodeProvider>
+          }
+      ]
+     ========================*/
     this._backStack = [];
 
-    /**
-     * this._pageProviderMap = {
-     *     pageName : nodeProvider
-     * }
-     */
+    /**========================
+     this._pageProviderMap = {
+        pageName : nodeProvider
+     }
+     ========================*/
     this._pageProviderMap = {};
 }
 
 /**
  * 注册一个页面的实例生成器,以备跳转到这个页面时使用
  * @param pageName
- * @param nodeProvider {
+ * @param nodeProvider
  *
  *     getNode(prevInstance, param) 返回一个Node,表示pageName对应的页面内容
  *     Node应当具备一个getHTMLNode方法,用来生成用渲染视图的html DOM
  *     参数prevInstance,为上次已经生成了的这个页面的HTML节点;如果页面实例还没生成过,则为null
  *     参数param,为本次跳转时带的参数
  *
- *     getEnterAnimation(pageName, isNewPage) return function($obj, container) 用上一个页面的pageName生成进入动画,
+ *     getEnterAnimation(pageName, isNewPage) return function($obj, $container, node) 用上一个页面的pageName生成进入动画,
  *     isNewPage表示本次动作是否要跳转到一个新页面,如果是false,则意味着本次跳转是回到一个旧页面
  *
- *     getExitAnimation(pageName, isNewPage) return function($obj, container) 用下一个页面的pageName生成退出动画,
+ *     getExitAnimation(pageName, isNewPage) return function($obj, $container, node) 用下一个页面的pageName生成退出动画,
  *     isNewPage表示本次动作是否要跳转到一个新页面,如果是false,则意味着本次跳转是回到一个旧页面
- * }
+ *
  *
  */
-PageManager.prototype.register = function(pageName, nodeProvider) {
+PageManager.prototype.register = function (pageName, nodeProvider) {
     this._pageProviderMap[pageName] = nodeProvider;
 };
 
 function PageManager_getPageOnTop() {
     var length = this._backStack.length;
-    if(!length) {
+    if (!length) {
         return null;
     } else {
         return this._backStack[length - 1];
@@ -90,26 +100,26 @@ function PageManager_getPageOnTop() {
 //private
 function PageManager_popPageFromStack(pageName) {
     var backStack = this._backStack;
-    var targetItem,index;
-    for(var i=backStack.length-1; i>=0; i--) {
+    var targetItem, index;
+    for (var i = backStack.length - 1; i >= 0; i--) {
         var item = backStack[i];
-        if(item.pageName === pageName) {
+        if (item.pageName === pageName) {
             index = i;
             targetItem = item;
             break;
         }
     }
     /** 没有找到需要的页面,返回空 */
-    if(!targetItem) {
+    if (!targetItem) {
         return null;
     } else { /** 将需要的页面弹出栈,返回目标页面的后退栈节点 */
-        for(var i = index+1; i<backStack.length; i++) {
+        for (var i = index + 1; i < backStack.length; i++) {
             var prevNode = backStack[i].prevNode;
-            if(prevNode.onDetach) {
+            if (prevNode.onDetach) {
                 prevNode.onDetach();
             }
         }
-        backStack.length = index+1;
+        backStack.length = index + 1;
         return targetItem;
     }
 }
@@ -120,11 +130,11 @@ function PageManager_popPageFromStack(pageName) {
  * @return true 合法 | false 不合法
  */
 function isValidNode(pageName, node) {
-    if(!node.getHTMLNode) {
+    if (!node.getHTMLNode) {
         LogUtil.e({
-            error : "Node from [getNode] should support [getHTMLNode] in switchPageAnim",
-            cls : "PageManager",
-            pageName : pageName
+            error: "Node from [getNode] should support [getHTMLNode] in switchPageAnim",
+            cls: "PageManager",
+            pageName: pageName
         });
         return false;
     }
@@ -141,29 +151,31 @@ function isValidNode(pageName, node) {
 //private
 function PageManager_jump(pageName, param) {
     var nodeProvider = this._pageProviderMap[pageName];
-    if(!nodeProvider || !nodeProvider.getNode || typeof(nodeProvider.getNode) !== 'function') {
+    if (!nodeProvider || !nodeProvider.getNode || typeof(nodeProvider.getNode) !== 'function') {
         //页面未注册,不跳转
-        return ;
+        return;
     }
     var prevTop = PageManager_getPageOnTop.call(this);
     var prevProvider = null;
     var prevPageName = null;
-    if(prevTop) {
+    var prevPageNode = null;
+    if (prevTop) {
         prevProvider = prevTop.provider;
         prevPageName = prevTop.pageName;
+        prevPageNode = prevTop.prevNode;
     }
 
     var targetItem = PageManager_popPageFromStack.call(this, pageName);
-    var isNeedAnim,isNewPage,enterAnimation,exitAnimation,newPageNode;
-    if(!targetItem) { //原页面不存在,创建一个新的插入后退栈,并跳转
+    var isNeedAnim, isNewPage, enterAnimation, exitAnimation, newPageNode;
+    if (!targetItem) { //原页面不存在,创建一个新的插入后退栈,并跳转
         var node = nodeProvider.getNode(null, param);
-        if(!isValidNode(pageName, node)) {
-            return ;
+        if (!isValidNode(pageName, node)) {
+            return;
         }
         var stackItem = {
-            pageName : pageName,
-            prevNode : node,
-            provider : nodeProvider
+            pageName: pageName,
+            prevNode: node,
+            provider: nodeProvider
         };
         this._backStack.push(stackItem);
         newPageNode = stackItem.prevNode;
@@ -171,120 +183,128 @@ function PageManager_jump(pageName, param) {
         isNewPage = true;
     } else { //原页面存在,更新并返回到原页面
         newPageNode = nodeProvider.getNode(targetItem.prevNode, param);
-        if(!isValidNode(targetItem.pageName, newPageNode)) {
-            return ;
+        if (!isValidNode(targetItem.pageName, newPageNode)) {
+            return;
         }
         isNeedAnim = (targetItem != prevTop); //如果需要移除原先的页面,则需要切换动画
         isNewPage = false;
         targetItem.prevNode = newPageNode;
     }
-    if(nodeProvider.getEnterAnimation) {
+    if (nodeProvider.getEnterAnimation) {
         enterAnimation = nodeProvider.getEnterAnimation(prevPageName, isNewPage);
     }
-    if(prevProvider && prevProvider.getExitAnimation) {
+    if (prevProvider && prevProvider.getExitAnimation) {
         exitAnimation = prevProvider.getExitAnimation(pageName, isNewPage);
     }
-    if(newPageNode.onAttach) {
+    if (newPageNode.onAttach) {
         newPageNode.onAttach();
     }
-    switchPageAnim(this._container, newPageNode, isNeedAnim, isNewPage,
+    switchPageAnim(this._container, prevPageNode, newPageNode, isNeedAnim, isNewPage,
         enterAnimation, exitAnimation);
 };
 
 var AnimDuration = 333;
 var AnimInterpolate = 'swing';
 
-PageManager.animLeftOutRemove = function($obj, container) {
+PageManager.animLeftOutRemove = function ($obj, $container, node) {
+    var container = $container.get(0);
     $obj.css({
-        position : 'absolute',
-        left : '0px',
+        position: 'absolute',
+        left: '0px',
         width: container.offsetWidth + "px",
-        height : container.offsetHeight + "px"
+        height: container.offsetHeight + "px"
     });
     $obj.animate({
-        left : -container.offsetWidth + "px"
-    }, AnimDuration, AnimInterpolate, function(){
+        left: -container.offsetWidth + "px"
+    }, AnimDuration, AnimInterpolate, function () {
         $obj.remove();
     });
-}
-PageManager.animRightOutRemove = function($obj, container) {
+};
+PageManager.animRightOutRemove = function ($obj, $container, node) {
+    var container = $container.get(0);
     $obj.css({
-        position : 'absolute',
-        left : '0px',
+        position: 'absolute',
+        left: '0px',
         width: container.offsetWidth + "px",
-        height : container.offsetHeight + "px"
+        height: container.offsetHeight + "px"
     });
     $obj.animate({
-        left : container.offsetWidth + "px"
-    }, AnimDuration, AnimInterpolate, function(){
+        left: container.offsetWidth + "px"
+    }, AnimDuration, AnimInterpolate, function () {
         $obj.remove();
     });
-}
-PageManager.animRightInAdd = function($obj, container) {
+};
+PageManager.animRightInAdd = function ($obj, $container, node) {
+    var container = $container.get(0);
     $obj.css({
-        position : 'absolute',
-        left : container.offsetWidth + "px",
+        position: 'absolute',
+        left: container.offsetWidth + "px",
         width: container.offsetWidth + "px",
-        height : container.offsetHeight + "px"
+        height: container.offsetHeight + "px"
     });
-    $(container).append($obj);
+    $container.append($obj);
     $obj.animate({
-        left : '0px'
+        left: '0px'
     }, AnimDuration, AnimInterpolate);
-}
-PageManager.animLeftInAdd = function($obj, container) {
+};
+PageManager.animLeftInAdd = function ($obj, $container, node) {
+    var container = $container.get(0);
     $obj.css({
-        position : 'absolute',
-        left : -container.offsetWidth + "px",
+        position: 'absolute',
+        left: -container.offsetWidth + "px",
         width: container.offsetWidth + "px",
-        height : container.offsetHeight + "px"
+        height: container.offsetHeight + "px"
     });
-    $(container).append($obj);
+    $container.append($obj);
     $obj.animate({
-        left : '0px'
+        left: '0px'
     }, AnimDuration, AnimInterpolate);
-}
+};
+
+PageManager.AnimDuration = AnimDuration;
 
 /**
- * @param newPageNode 拥有getHTMLNode方法的Node
+ * @param prevPageNode 被移除页面的Node
+ * @param newPageNode 被添加页面的Node
  * @param isNeedAnim 是否需要动画
  * @param isNewPage 本次切换是否是打开新页面(否则是回到旧页面)
  * @param enterAnimation 进入动画函数
  * @param exitAnimation 退出动画函数
  */
-function switchPageAnim(container, newPageNode, isNeedAnim, isNewPage, enterAnimation, exitAnimation) {
-    if(!enterAnimation) {
-        enterAnimation = isNewPage ? PageManager.animRightInAdd:PageManager.animLeftInAdd;
+function switchPageAnim(container, prevPageNode, newPageNode, isNeedAnim, isNewPage, enterAnimation, exitAnimation) {
+    if (!enterAnimation) {
+        enterAnimation = isNewPage ? PageManager.animRightInAdd : PageManager.animLeftInAdd;
     }
-    if(!exitAnimation) {
-        exitAnimation = exitAnimation || isNewPage ? PageManager.animLeftOutRemove:PageManager.animRightOutRemove;
+    if (!exitAnimation) {
+        exitAnimation = exitAnimation || isNewPage ? PageManager.animLeftOutRemove : PageManager.animRightOutRemove;
     }
     var $ = window.jQuery;
     var $container = $(container);
     var $removePage = $container.children('div');
     var $addPage = $('<div></div>').append(newPageNode.getHTMLNode());
-    if(isNeedAnim) {
-        enterAnimation($addPage, container);
-        exitAnimation($removePage, container);
+    if (isNeedAnim) {
+        enterAnimation($addPage, $container, newPageNode);
+        exitAnimation($removePage, $container, prevPageNode);
     } else {
         $addPage.css({
-            position : 'absolute',
-            left : '0px',
+            position: 'absolute',
+            left: '0px',
             width: container.offsetWidth + "px",
-            height : container.offsetHeight + "px"
+            height: container.offsetHeight + "px"
         });
         $container.append($addPage);
     }
 }
 
 function genDirectorURL4Jump(pageName, param) {
-    var url = "#"+pageName;
+    var url = "#" + pageName;
     var paramStr = "";
-    try{
+    try {
         paramStr = JSON.stringify(param);
-    }catch(e){}
-    if(paramStr) {
-        url += "?param="+encodeURI(paramStr);
+    } catch (e) {
+    }
+    if (paramStr) {
+        url += "?param=" + encodeURI(paramStr);
     }
     return url;
 }
@@ -292,18 +312,18 @@ function genDirectorURL4Jump(pageName, param) {
 /**
  * 当所有页面注册工作结束后,调用init方法应用路由表
  */
-PageManager.prototype.init = function() {
+PageManager.prototype.init = function () {
     this._container.innerHTML = '';
     var providerMap = this._pageProviderMap;
     var self = this;
     var routeMap = {
-        ":pageName" : function(pageName) {
+        ":pageName": function (pageName) {
             var param = URLUtil.getQueryParam("param");
             var defaultPage = self._options.defaultPage;
-            if(providerMap[pageName]) {
+            if (providerMap[pageName]) {
                 PageManager_jump.call(self, pageName, param);
-            } else if(defaultPage) {
-                if(providerMap[defaultPage]) {
+            } else if (defaultPage) {
+                if (providerMap[defaultPage]) {
                     PageManager_jump.call(self, defaultPage);
                 }
             }
@@ -311,9 +331,9 @@ PageManager.prototype.init = function() {
     };
     this._router = new Router(routeMap);
     this._router.configure({
-        notfound: function() {
+        notfound: function () {
             var defaultPage = self._options.defaultPage;
-            if(providerMap[defaultPage]) {
+            if (providerMap[defaultPage]) {
                 PageManager_jump.call(self, defaultPage);
             }
         }
@@ -326,9 +346,12 @@ PageManager.prototype.init = function() {
  * @param pageName
  * @param param 跳转携带的参数,会传入相应页面的nodeProvider里
  */
-PageManager.jumpToPage = function(pageName, param) {
+PageManager.jumpToPage = function (pageName, param) {
     window.history.pushState(null, null, window.location.href);
     window.location.href = genDirectorURL4Jump(pageName, param);
 };
 
 window.PageManager = PageManager;
+
+
+})();

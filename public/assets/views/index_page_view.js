@@ -4,6 +4,8 @@
  * @NOTE:require("jquery")
  */
 
+(function() {
+
 function onIndexPageItemClick(indexPageItem) {
     PageManager.jumpToPage("blog_page", {
         content:"博客内容"
@@ -155,7 +157,7 @@ function IndexPageSwipe_update() {
  * @param resolve function(serviceData)
  * @param reject function(error)
  */
- function sendIndexDataSearch(resolve, reject) {
+function sendIndexDataSearch(resolve, reject) {
     var $ = window.jQuery;
     $.ajax({
         url : '../index_data',
@@ -190,6 +192,50 @@ IndexPageView.prototype.getHTMLNode = function() {
     return this._$ele.get(0);
 };
 
+var AnimDuration = PageManager.AnimDuration;
+
+function left2rightEnter($dom, $container, node) {
+    var container = $container.get(0);
+    var halfW = container.offsetWidth/2;
+    $dom.css({
+        position : 'absolute',
+        width:'100%',
+        height:'100%'
+    });
+    $container.prepend($dom);
+    AnimationUtil.animTranslate($dom.get(0), -halfW, 0, 0);
+    setTimeout(function() {
+        AnimationUtil.animTranslate($dom.get(0), 0, 0, AnimDuration);
+    }, 0);
+}
+function right2leftEnter($dom, $container, node) {
+    var container = $container.get(0);
+    $dom.css({
+        position : 'absolute',
+        width:'100%',
+        height:'100%'
+    });
+    $container.append($dom);
+    AnimationUtil.animTranslate($dom.get(0), container.offsetWidth, 0, 0);
+    setTimeout(function() {
+        AnimationUtil.animTranslate($dom.get(0), 0, 0, AnimDuration);
+    }, 0);
+}
+function left2rightExit($dom, $container, node) {
+    var container = $container.get(0);
+    AnimationUtil.animTranslate($dom.get(0), container.offsetWidth, 0, AnimDuration);
+    setTimeout(function() {
+        $dom.remove();
+    }, AnimDuration);
+}
+function right2leftExit($dom, $container, node) {
+    var container = $container.get(0);
+    AnimationUtil.animTranslate($dom.get(0), -container.offsetWidth/2, 0, AnimDuration);
+    setTimeout(function() {
+        $dom.remove();
+    }, AnimDuration);
+}
+
 var nodeProvider = {
     getNode:function(savedInstance) {
         if(savedInstance) {
@@ -205,6 +251,12 @@ var nodeProvider = {
             indexPageSwipe.notifyError("服务器正在维护\n请稍候重试");
         });
         return indexPageView;
+    },
+    getEnterAnimation : function(prevPageName, isNewPage) {
+        return isNewPage ? right2leftEnter : left2rightEnter;
+    },
+    getExitAnimation : function(prevPageName, isNewPage) {
+        return isNewPage ? right2leftExit : left2rightExit;
     }
 };
 
@@ -213,3 +265,5 @@ IndexPageView.getProvider = function() {
 };
 
 window.IndexPageView = IndexPageView;
+
+})();
