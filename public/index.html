@@ -2,55 +2,48 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport"   content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="viewport"   content="initial-scale=1, maximum-scale=1, user-scalable=no" />
     <link rel="stylesheet" href="assets/libs/swipe_style.css" />
     <link rel="stylesheet" href="assets/styles/page_style.css" />
 </head>
 <body style="overflow:hidden">
-    <div id="pages_container" class="swipe-vertical">
-        <div class="swipe-vertical-wrap" id="pages">
-            <!-- add element pages here-->
-        </div>
+    <div>
+        <div id="container" style='position:fixed;left:0;top:0;right:0;bottom:0;width:100%;height:100%;'></div>
     </div>
 </body>
-<script src="assets/libs/swipe.js"></script>
+<!--Base层工具脚本-->
 <script src="assets/libs/jquery.min.js"></script>
-<script type="text/javascript">
-    var scale = 1 / window.devicePixelRatio;
-    document.querySelector('meta[name="viewport"]').setAttribute('content','initial-scale=' + scale + ', maximum-scale=' + scale + ', minimum-scale=' + scale + ', user-scalable=no');
-</script>
-<script src="assets/views/index_page_item.js"></script>
+<script src="assets/libs/director.min.js"></script>
+<script src="assets/libs/swipe.js"></script>
+<!--中间层工具脚本-->
+<script src="assets/utils/animation_util.js"></script>
+<script src="assets/utils/common_util.js"></script>
+<script src="assets/utils/motion_util.js"></script>
+<script src="assets/utils/page_manager.js"></script>
+<script src="assets/views/common_views.js"></script>
+<!--业务脚本-->
+<script src="assets/views/index_page_view.js"></script>
+<script src="assets/views/blog_page_view.js"></script>
+
 <script>
-    //inject real data
-    var pages = document.querySelector("#pages");
-    for(var i=0;i<3;i++) {
-        var item = new IndexPageItem();
-        item.setTitle("凤城烟雨这个标题有点太短了"+i)
-                .setImgSrc("./assets/images/tatto.jpg")
-                .setDesc("这个是一个关于我不太知道为什么要写的博客的小故事,所以随便写写就好,不用太操心")
-                .setImgFooter("第 "+(i+1)+" 页");
-        pages.appendChild(item.getHTMLNode());
-    }
-
-    function initSwipe() {
-        var page_container = document.querySelector("#pages_container");
-        page_container.setAttribute("style",window.innerHeight+"px");
-
-        var swipe = new Swipe(page_container,{
-            startSlide: 0,
-            speed: 400,
-            autoStart:false,
-            orientation:"vertical",
-            auto: 0,
-            draggable: true,
-            continuous: false,
-            disableScroll: true,
-            stopPropagation: false,
-            slideHeight : window.innerHeight
-        });
-    }
-    initSwipe();
-
+    var $ = window.jQuery;
+    /**
+     * 初始化页面基准字体大小
+     */
+    WindowUtil.adjustRemBaseUnit();
+    $(window).on('resize', function() {
+        WindowUtil.adjustRemBaseUnit();
+    });
+    /**
+     * 初始化路由
+     */
+    var container = document.querySelector('#container');
+    var pageMgr = new PageManager(container, {
+        defaultPage : 'index_page'
+    });
+    pageMgr.register('index_page', IndexPageView.getProvider());
+    pageMgr.register('blog_page', BlogPageView.getProvider());
+    pageMgr.init();
 </script>
 </html>
 

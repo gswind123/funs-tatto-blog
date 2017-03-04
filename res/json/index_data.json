@@ -1,0 +1,20 @@
+[
+  {
+    "title" : "这是我亲自\n配置在服务端的页面标题",
+    "imgSrc" : "./assets/images/tatto.jpg",
+    "imgFooter" : "FUNS BLOG",
+    "desc" : "所有依赖的数据最好配置在服务端,\n这样以后做博主编辑系统的时候,\n只要修改这些配置,博客内容就会自然改变;\n当然这些数据也可以存放在数据库"
+  },
+  {
+    "title" : "我是第二页",
+    "imgSrc" : "./assets/images/tatto.jpg",
+    "imgFooter" : "FUNS BLOG",
+    "desc" : "所有依赖的数据最好配置在服务端,这样以后做博主编辑系统的时候,只要修改这些配置,博客内容就会自然改变;当然这些数据也可以存放在数据库"
+  },
+  {
+    "title" : "我是第三页",
+    "imgSrc" : "./assets/images/tatto.jpg",
+    "imgFooter" : "FUNS BLOG",
+    "desc" : "所有依赖的数据最好配置在服务端,这样以后做博主编辑系统的时候,只要修改这些配置,博客内容就会自然改变;当然这些数据也可以存放在数据库"
+  }
+]
