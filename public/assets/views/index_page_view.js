@@ -40,8 +40,10 @@ function IndexPageItem() {
         this._$indexDesc = $element.find(".index-desc");
         /** 设置跳转点击事件 */
         var self = this;
-        window.MotionUtil.addOnClickListener($element.get(0), function() {
-            onIndexPageItemClick(self);
+        window.MotionUtil.addTouchEventListener($element.get(0), {
+            onClick : function(event) {
+                onIndexPageItemClick(event.param);
+            }
         });
     } else {
         LogUtil.e("jQuery not support!");
@@ -183,6 +185,13 @@ function IndexPageView() {
         $titleBar.setTitle("饭饭").setRightBtnImg('./assets/images/funs-assist-icon.png').setLeftBtnShow(false);
         this._$ele.append($titleBar.getHTMLNode());
         this._$pageBody = this._$ele.find('.index-page-body');
+        var ele = this._$ele.get(0);
+        //添加点击容器的黑色波纹效果
+        window.MotionUtil.addTouchEventListener(ele, {
+            onClick : function(event) {
+                window.AnimationUtil.animOnClick_Expand($('body').get(0), event.x, event.y, 400);
+            }
+        });
     } else {
         LogUtil.e("jQuery not support");
     }
@@ -205,7 +214,7 @@ function left2rightEnter($dom, $container, node) {
     $container.prepend($dom);
     AnimationUtil.animTranslate($dom.get(0), -halfW, 0, 0);
     setTimeout(function() {
-        AnimationUtil.animTranslate($dom.get(0), 0, 0, AnimDuration);
+        AnimationUtil.animTranslate($dom.get(0), halfW, 0, AnimDuration);
     }, 0);
 }
 function right2leftEnter($dom, $container, node) {
@@ -218,7 +227,7 @@ function right2leftEnter($dom, $container, node) {
     $container.append($dom);
     AnimationUtil.animTranslate($dom.get(0), container.offsetWidth, 0, 0);
     setTimeout(function() {
-        AnimationUtil.animTranslate($dom.get(0), 0, 0, AnimDuration);
+        AnimationUtil.animTranslate($dom.get(0), -container.offsetWidth, 0, AnimDuration);
     }, 0);
 }
 function left2rightExit($dom, $container, node) {

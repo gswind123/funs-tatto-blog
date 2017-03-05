@@ -49,7 +49,7 @@ window.FormatUtil = {
 window.WindowUtil = {
     /**
      * 根据当前页面的对角线长度,重置rem单位的基准像素值
-     * NOTE: 在对角线736.3px时,font-size是10px;二者等比增大
+     * NOTE: 在对角线736.3px时(360x640),font-size是10px;二者等比增大
      */
     adjustRemBaseUnit: function () {
         if(window.jQuery) {
@@ -59,6 +59,17 @@ window.WindowUtil = {
             var $ = window.jQuery;
             $('html').css('font-size', htmlFontSize+'px');
         }
+    },
+
+    /**
+     * 根据rem获取pixel
+     * NOTE:是根据查询html节点得到的rem到pixel转换率
+     */
+    getPixelFromRem : function(rem) {
+        var fontSize = $('html').css('font-size');
+        fontSize = fontSize && fontSize.replace(/px/g, '');
+        fontSize = Number.parseFloat(fontSize);
+        return rem * fontSize;
     }
 };
 

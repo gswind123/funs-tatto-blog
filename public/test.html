@@ -3,22 +3,19 @@
 <head>
     <meta charset="utf-8" />
 </head>
-<body>
-<div id="container" style="width:100%;height:100%;overflow: hidden">
-
-</div>
+<body style="font-size:10px">
+<div id="container" style="width:100%;height:64rem;overflow: hidden;display:block;background-color:#ffccdd"></div>
 </body>
 <script src="assets/libs/jquery.min.js"></script>
 <script src="assets/libs/director.min.js"></script>
+<script src="assets/utils/common_util.js"></script>
+<script src="assets/utils/animation_util.js"></script>
 <script>
-    var routeMap = {
-        ':param' : function(param) {
-            console.log(param);
-        }
-    };
-    var router = new Router(routeMap);
-
-    router.init();
+    window.WindowUtil.adjustRemBaseUnit();
+    var dom = document.getElementById('container');
+    $(dom).click(function() {
+        window.AnimationUtil.animOnClick_Expand(dom, 200, 300, 1000);
+    });
 </script>
 </html>
 
