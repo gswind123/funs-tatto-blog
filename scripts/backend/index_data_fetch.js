@@ -8,7 +8,7 @@ const FS = require('fs');
 const Promise = require('promise');
 
 var getIndexDataByFile = function () {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         FS.readFile(Resources.getJsonFile('index_data.json'), 'utf-8', function (err, data) {
             var dataObj = {
                 data: []

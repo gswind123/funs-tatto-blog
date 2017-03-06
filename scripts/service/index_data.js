@@ -45,7 +45,8 @@ module.exports = function (req, res) {
             }
             finalFunc();
         })
-        .then(function(err) {
+        .catch(function(err) {
+            console.log(err);
             finalFunc();
         });
 };
