@@ -41,8 +41,8 @@ function IndexPageItem() {
         /** 设置跳转点击事件 */
         var self = this;
         window.MotionUtil.addTouchEventListener($element.get(0), {
-            onClick : function(event) {
-                onIndexPageItemClick(event.param);
+            onClick: function (event) {
+                onIndexPageItemClick(self);
             }
         });
     } else {

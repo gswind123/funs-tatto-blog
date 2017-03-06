@@ -43,9 +43,11 @@ module.exports = function (req, res) {
                 indexData.data = dataObject.data;
                 indexData.result = 0;
             }
+            var a = null.invoke();
             finalFunc();
         })
-        .then(function(err) {
+        .catch(function(exp) {
+            console.log(JSON.stringify(exp));
             finalFunc();
         });
 };
