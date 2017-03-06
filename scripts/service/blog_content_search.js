@@ -6,16 +6,23 @@ module.exports = function (req, res) {
         result: 1,
         data: []
     };
-
-    if (blogId) {
-        var dataObject = BackendEngine.Invoke('blog_content_fetch', blogId);
-        if (dataObject) {
-            response.data = dataObject.data;
-            response.result = 0;
-        }
+    function finalFunc() {
+        res.headers("Content-type", "application/json");
+        res.send(response);
+        res.end();
     }
 
-    res.headers("Content-type", "application/json");
-    res.send(response);
-    res.end();
+    if (blogId) {
+        BackendEngine.Invoke('blog_content_fetch', blogId)
+            .then(function(dataObj) {
+                if (dataObj) {
+                    response.data = dataObj.data;
+                    response.result = 0;
+                }
+                finalFunc();
+            })
+            .then(function(err) {
+                finalFunc();
+            });
+    }
 };

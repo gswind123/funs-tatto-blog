@@ -31,14 +31,21 @@ module.exports = function (req, res) {
         result: 1,
         data: []
     };
-
-    var dataObject = BackendEngine.Invoke('index_data_fetch');
-    if (dataObject) {
-        indexData.data = dataObject.data;
-        indexData.result = 0;
+    function finalFunc() {
+        res.header("Content-type", "application/json");
+        res.send(indexData);
+        res.end();
     }
 
-    res.header("Content-type", "application/json");
-    res.send(indexData);
-    res.end();
+    BackendEngine.Invoke('index_data_fetch')
+        .then(function(dataObject) {
+            if (dataObject) {
+                indexData.data = dataObject.data;
+                indexData.result = 0;
+            }
+            finalFunc();
+        })
+        .then(function(err) {
+            finalFunc();
+        });
 };

@@ -5,21 +5,23 @@
 
 const Resources = require('../utils/Resources.js');
 const FS = require('fs');
+const Promise = require('promise');
 
 var getIndexDataByFile = function () {
-    var dataObj = {
-        data: []
-    };
-
-    FS.readFile(Resources.getJsonFile('index_data.json'), 'utf-8', function (err, data) {
-        if (err) {
-            dataObj = false;
-        } else {
-            dataObj.data = JSON.parse(data);
-        }
+    return new Promise(function(resolve, reject) {
+        FS.readFile(Resources.getJsonFile('index_data.json'), 'utf-8', function (err, data) {
+            var dataObj = {
+                data: []
+            };
+            if (err) {
+                dataObj = false;
+                reject(err);
+            } else {
+                dataObj.data = JSON.parse(data);
+                resolve(dataObj);
+            }
+        });
     });
-
-    return dataObj;
 };
 
 var getIndexDataByDB = function () {
@@ -30,6 +32,4 @@ var getIndexDataByDB = function () {
     return dataObj;
 };
 
-module.exports = function () {
-    return getIndexDataByFile();
-};
+module.exports = getIndexDataByFile;
