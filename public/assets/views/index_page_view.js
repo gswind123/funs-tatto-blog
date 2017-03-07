@@ -189,7 +189,7 @@ function IndexPageView() {
         //添加点击容器的黑色波纹效果
         window.MotionUtil.addTouchEventListener(ele, {
             onClick : function(event) {
-                window.AnimationUtil.animOnClick_Expand($('body').get(0), event.x, event.y, 400);
+                window.AnimationUtil.animOnClick_Expand($('body').get(0), event.x, event.y, 200);
             }
         });
     } else {

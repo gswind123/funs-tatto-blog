@@ -71,7 +71,7 @@ window.AnimationUtil = {
     animOnClick_Expand : function(dom, centerX, centerY, duration) {
         var $ = window.jQuery;
         var WindowUtil = window.WindowUtil;
-        var sprite_size_rem = 15;
+        var sprite_size_rem = 16;
         var sprite_size_px = WindowUtil.getPixelFromRem(sprite_size_rem);
         var half_size_px = sprite_size_px/2;
         var $sprite = $("<div></div>");
@@ -100,18 +100,17 @@ window.AnimationUtil = {
         //start real translate and scale
         setTimeout(function() {
             style_clearTransform.call(style);
-            style_setDuration.call(style, duration, 'linear');
+            style_setDuration.call(style, duration * 2, 'linear');
             style_addScale.call(style, 1, 1);
         }, 0);
         //start change opacity
         $sprite.animate({
            opacity : 0
-        }, duration, 'linear', function() {
-            //add some delay to smooth opacity change
-            setTimeout(function() {
-                $sprite.remove();
-            }, 200);
-        });
+        }, duration, 'linear');
+        //add timer to remove animation
+        setTimeout(function() {
+            $sprite.remove();
+        }, duration + 300);
     }
 
 };
