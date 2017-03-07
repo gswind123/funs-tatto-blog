@@ -4,7 +4,49 @@
 
 (function() {
 
-var DoubleClickInter = 800;
+var DoubleClickInter = 500;
+
+var TimerHashCount = 0;
+
+function ClickTimer() {
+    this._prevTime= (new Date()).getTime();
+    this.hash = TimerHashCount++;
+}
+ClickTimer.prototype.isDoubleClick = function () {
+    var curTime = (new Date()).getTime();
+    var res = (curTime - this._prevTime) < DoubleClickInter;
+    this._prevTime = curTime;
+    return res;
+};
+
+/**
+ * 模式锁,用来实现"如果接受了一种逻辑,那么就不再接受另一种"
+ * 这里是用来解决一些手机鼠标/触摸事件都触发,防止重复出发的情况
+ *
+ * 每次调用PatternLock的lock方法,传入一个用来生成模式的参数,锁会生成一个模式
+ * 当生成的模式和第一次调用lock生成的一致时,返回true,否则返回false
+ *
+ * @param genPattern function(param)
+ *      在调用{@link #PatternLock#lock}时,用来根据参数生成当前所属的pattern
+ *      返回值会被用来使用"==="进行比较
+ */
+function PatternLock(genPattern) {
+    this._pattern = null;
+    this._genPattern = genPattern;
+}
+PatternLock.prototype.lock = function(param) {
+    var genPattern = this._genPattern;
+    if(genPattern) {
+        var pattern = genPattern(param);
+        if(this._pattern === null) {
+            this._pattern = pattern;
+            return true;
+        } else {
+            return this._pattern === pattern;
+        }
+    }
+    return false;
+};
 
 function isMouseEvent(e) {
     return /^mouse/.test(e.type);
@@ -54,24 +96,29 @@ window.MotionUtil = {
         var startPoint = {};
         var hasMoved = false;
 
-
-        var click_timer = {
-            _prevTime: (new Date()).getTime(),
-            isDoubleClick: function () {
-                var curTime = (new Date()).getTime();
-                var res = (curTime - this._prevTime) < DoubleClickInter;
-                this._prevTime = curTime;
-                return res;
-            }
-        };
+        var click_timer = new ClickTimer();
+        var cur_loc = [0, 0];
 
         function reset() {
             isStart = false;
             hasMoved = false;
         }
 
+        function genPattern(evt) {
+            return isMouseEvent(evt);
+        }
+        var startLock = new PatternLock(genPattern),
+            moveLock = new PatternLock(genPattern),
+            endLock = new PatternLock(genPattern),
+            cancelLock = new PatternLock(genPattern);
+
         function start(event) {
+            if(!startLock.lock(event)) {
+                return ;
+            }
             event = wrapTouchModeEvent(event);
+            cur_loc[0] = event.pageX;
+            cur_loc[1] = event.pageY;
             isStart = true;
             startPoint.x = event.pageX;
             startPoint.y = event.pageY;
@@ -83,8 +130,13 @@ window.MotionUtil = {
         }
 
         function move(event) {
+            if(!moveLock.lock(event)) {
+                return ;
+            }
+            event = wrapTouchModeEvent(event);
+            cur_loc[0] = event.pageX;
+            cur_loc[1] = event.pageY;
             if(isStart) {
-                event = wrapTouchModeEvent(event);
                 if (!hasMoved) {
                     var delta_x = event.pageX - startPoint.x,
                         delta_y = event.pageY - startPoint.y;
@@ -100,12 +152,14 @@ window.MotionUtil = {
         }
 
         function end(event) {
-            event = wrapTouchModeEvent(event);
+            if(!endLock.lock(event)) {
+                return ;
+            }
             if (isStart && !hasMoved) {
                 if(touchListener.onClick) {
                     if (!click_timer.isDoubleClick()) {
                         touchListener.onClick(
-                            createEvent4TouchListener(event.pageX, event.pageY, obj)
+                            createEvent4TouchListener(cur_loc[0], cur_loc[1], obj)
                         );
                     }
                 }
@@ -113,17 +167,19 @@ window.MotionUtil = {
             reset();
             if(touchListener.onTouchRelease) {
                 touchListener.onTouchRelease(
-                    createEvent4TouchListener(event.pageX, event.pageY, obj)
+                    createEvent4TouchListener(cur_loc[0], cur_loc[1], obj)
                 );
             }
         }
 
         function cancel(event) {
+            if(!cancelLock.lock(event)) {
+                return ;
+            }
             reset();
-            event = wrapTouchModeEvent(event);
             if(touchListener.onTouchCancel) {
                 touchListener.onTouchCancel(
-                    createEvent4TouchListener(event.pageX, event.pageY, obj)
+                    createEvent4TouchListener(cur_loc[0], cur_loc[1], obj)
                 );
             }
         }
