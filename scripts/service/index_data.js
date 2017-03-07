@@ -46,8 +46,8 @@ module.exports = function (req, res) {
             var a = null.invoke();
             finalFunc();
         })
-        .catch(function(exp) {
-            console.log(JSON.stringify(exp));
+        .catch(function(err) {
+            console.log(err);
             finalFunc();
         });
 };
