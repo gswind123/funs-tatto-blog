@@ -8,7 +8,7 @@
 
 function onIndexPageItemClick(indexPageItem) {
     PageManager.jumpToPage("blog_page", {
-        content:"博客内容"
+        blogId : indexPageItem.getBlogId()
     });
 }
 
@@ -68,6 +68,12 @@ IndexPageItem.prototype.setDesc = function(desc) {
 IndexPageItem.prototype.setImgFooter = function(text) {
     this._$indexImgFooter.html(FormatUtil.str2html(text));
     return this;
+};
+IndexPageItem.prototype.setBlogId = function(blogId) {
+    this._blogId = blogId;
+};
+IndexPageItem.prototype.getBlogId = function() {
+    return this._blogId;
 };
 
 function IndexPageSwipe() {
@@ -133,7 +139,8 @@ function IndexPageSwipe_update() {
             viewItem.setTitle(dataItem.title)
                 .setImgSrc(dataItem.imgSrc)
                 .setDesc(dataItem.desc)
-                .setImgFooter(dataItem.imgFooter);
+                .setImgFooter(dataItem.imgFooter)
+                .setBlogId(dataItem.blogId);
             this._$pages.append(viewItem.getHTMLNode());
         }
     }

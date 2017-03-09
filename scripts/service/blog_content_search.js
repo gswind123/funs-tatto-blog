@@ -1,7 +1,7 @@
 const BackendEngine = require('./../backend/BackendEngine.js');
 
 module.exports = function (req, res) {
-    var blogId = req.body.id;
+    var blogId = req.params.id;
     var response = {
         result: 1,
         data: []
