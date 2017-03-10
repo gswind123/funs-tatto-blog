@@ -40,9 +40,9 @@ BlogPageView.prototype.onAttach = function() {
             type : "POST",
             url : "../blog_content_search",
             contentType : "application/json",
-            data : {
+            data : JSON.stringify({
                 id : this._blogId
-            },
+            }),
             success : function(data) {
                 self.setViewModel(data);
             },

@@ -49,6 +49,7 @@ window.FormatUtil = {
 window.WindowUtil = {
     /**
      * 根据当前页面的对角线长度,重置rem单位的基准像素值
+     * 这个方法不频繁调用,实现效率可以奢侈一点
      * NOTE: 在对角线736.3px时(360x640),font-size是10px;二者等比增大
      */
     adjustRemBaseUnit: function () {
