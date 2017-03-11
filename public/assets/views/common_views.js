@@ -69,4 +69,54 @@ FunsTitleBar.prototype.getHTMLNode = function() {
 
 window.FunsTitleBar = FunsTitleBar;
 
+
+/**
+ * 索引页和内容页的标题图片区域
+ */
+function FunsBlogTitleImage() {
+    if(window.jQuery) {
+        var $ = window.jQuery;
+        var $element = $(
+            "<div style=''>" +
+            "   <div class='index-img-container'>" +
+            "       <img class='index-img'></img>" +
+            "   </div>" +
+            "   <div class='index-img-footer'>" +
+            "       <div class='index-img-footer-line'></div>" +
+            "       <span class='index-img-footer-tag'></span>" +
+            "   </div>" +
+            "</div>");
+        this._$titleImg = $element.find('.index-img');
+        this._$footerTag = $element.find('.index-img-footer-tag');
+        this._$footerLine = $element.find('.index-img-footer-line');
+        this._$ele = $element;
+    } else {
+        LogUtil.e("jQuery not support!");
+    }
+}
+FunsBlogTitleImage.prototype.setTitleImage = function(url) {
+    var $img = this._$titleImg;
+    $img && $img.attr('src', url);
+    return this;
+};
+FunsBlogTitleImage.prototype.setFooterTag = function(tagText) {
+    var $tag = this._$footerTag;
+    $tag && $tag.html(FormatUtil.str2html(tagText));
+    return this;
+};
+FunsBlogTitleImage.prototype.getHTMLNode = function() {
+    return this._$ele && this._$ele.get(0);
+};
+FunsBlogTitleImage.prototype.setTagVisible = function(isVisible) {
+    if(this._$footerTag) {
+        if(!!isVisible) {
+            this._$footerTag.show();
+        } else {
+            this._$footerTag.hide();
+        }
+    }
+    return this;
+};
+window.FunsBlogTitleImage = FunsBlogTitleImage;
+
 })();

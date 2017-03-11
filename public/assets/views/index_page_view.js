@@ -18,13 +18,6 @@ function IndexPageItem() {
 
         var $element = $(
             "<div class='swipe-vertical-wrap-item index-page'>" +
-            "   <div class='index-img-container'>" +
-            "       <img class='index-img'></img>" +
-            "   </div>" +
-            "   <div class='index-img-footer'>" +
-            "       <div class='index-img-footer-line'></div>" +
-            "       <span class='index-img-footer-tag'></span>" +
-            "   </div>" +
             "   <div class='index-title'>" +
             "       <div class='index-title-text'></div>" +
             "   </div>" +
@@ -34,8 +27,8 @@ function IndexPageItem() {
             "   </div>" +
             "</div>");
         this._$ele = $element;
-        this._$indexImg = $element.find(".index-img");
-        this._$indexImgFooter = $element.find('.index-img-footer-tag');
+        this._titleImage = new FunsBlogTitleImage();
+        $element.prepend(this._titleImage.getHTMLNode());
         this._$indexTitle = $element.find(".index-title-text");
         this._$indexDesc = $element.find(".index-desc");
         /** 设置跳转点击事件 */
@@ -54,7 +47,7 @@ IndexPageItem.prototype.getHTMLNode = function() {
     return this._$ele.get(0);
 };
 IndexPageItem.prototype.setImgSrc = function(url) {
-    this._$indexImg.attr('src', url);
+    this._titleImage.setTitleImage(url);
     return this;
 };
 IndexPageItem.prototype.setTitle = function(title) {
@@ -66,7 +59,7 @@ IndexPageItem.prototype.setDesc = function(desc) {
     return this;
 };
 IndexPageItem.prototype.setImgFooter = function(text) {
-    this._$indexImgFooter.html(FormatUtil.str2html(text));
+    this._titleImage.setFooterTag(text);
     return this;
 };
 IndexPageItem.prototype.setBlogId = function(blogId) {
