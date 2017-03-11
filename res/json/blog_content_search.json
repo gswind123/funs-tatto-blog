@@ -1,7 +1,6 @@
-[
   {
     "title" : "第一篇文章标题",
-    "imgSrc" : "./assets/images/tatto.jpg",
+    "imgSrc" : "./assets/images/blogimg1.jpg",
     "imgFooterLeft" : "图片的左下角注脚",
     "imgFooterRight" : "2017/02/03",
     "author" : "作者名",
@@ -12,7 +11,7 @@
       },
       {
         "type" : "img",
-        "data" : "./assets/images/xxx1.jpg"
+        "data" : "./assets/images/blogimg2.jpg"
       },
       {
         "type" : "text",
@@ -20,7 +19,7 @@
       },
       {
         "type" : "img",
-        "data" : "./assets/images/xxx2.jpg"
+        "data" : "./assets/images/blogimg3.jpg"
       },
       {
         "type" : "text",
@@ -28,4 +27,3 @@
       }
     ]
   }
-]
