@@ -10,10 +10,8 @@ var app = express();
 /** 注册静态资源地址 */
 app.use('/public', express.static('public'));
 
-/** post模式中间件 */
-const BodyParser = require('body-parser');
-app.use(BodyParser.urlencoded({extended:false}));
-app.use(BodyParser.json({type:"application/json"}));
+/** 请求中间件 */
+require('./scripts/utils/RequestUtil.js').addRequestMiddleware(app);
 
 /**
  * 注册router中配置的服务到app

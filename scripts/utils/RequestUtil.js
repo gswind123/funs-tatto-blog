@@ -4,6 +4,13 @@
  */
 
 module.exports = {
+    addRequestMiddleware : function(app) {
+        if(app && app.use) {
+            const BodyParser = require('body-parser');
+            app.use(BodyParser.urlencoded({extended:false}));
+            app.use(BodyParser.json({type:"application/json"}));
+        }
+    },
     getParam :  function(request, name) {
         if(request.method.toLowerCase() === 'post') {
             return request.body[name];
