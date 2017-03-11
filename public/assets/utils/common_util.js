@@ -49,6 +49,7 @@ window.FormatUtil = {
 window.WindowUtil = {
     /**
      * 根据当前页面的对角线长度,重置rem单位的基准像素值
+     * 这个方法不频繁调用,实现效率可以奢侈一点
      * NOTE: 在对角线736.3px时(360x640),font-size是10px;二者等比增大
      */
     adjustRemBaseUnit: function () {
@@ -70,6 +71,54 @@ window.WindowUtil = {
         fontSize = fontSize && fontSize.replace(/px/g, '');
         fontSize = Number.parseFloat(fontSize);
         return rem * fontSize;
+    }
+};
+
+function sendAjax(serviceName, method, param, success, error, final) {
+    var ajaxParam = {};
+    ajaxParam.url = '../' + serviceName; //只考虑用在index.html单页应用的情况
+    if(method.toLowerCase() === 'post') {
+        ajaxParam.type = 'POST';
+        ajaxParam.contentType = 'application/json';
+        if(typeof(param) === 'object') {
+            ajaxParam.data = JSON.stringify(param);
+        } else {
+            ajaxParam.data = param;
+        }
+    } else {
+        ajaxParam.type = 'GET';
+        ajaxParam.data = param;
+    }
+    ajaxParam.success = success;
+    ajaxParam.error = error;
+    ajaxParam.complete = final;
+    ajaxParam.dataType = 'json';
+    var $xhr = window.jQuery.ajax(ajaxParam);
+    return {
+        _$xhr : $xhr,
+        cancel : function() {
+            if(this._$xhr) {
+                this._$xhr.abort();
+                this._$xhr = null;
+            }
+        }
+    };
+}
+window.Sender = {
+    /**
+     * 发送一个get请求
+     * @return sendResult 拥有cancel方法,可以取消正在发送的服务
+     */
+    get : function(serviceName, param, success, error, final) {
+        return sendAjax(serviceName, 'GET', param, success, error, final);
+    },
+
+    /**
+     * 发送一个post请求
+     * @return sendResult 拥有cancel方法,可以取消正在发送的服务
+     */
+    post : function(serviceName, param, success, error, final) {
+        return sendAjax(serviceName, 'POST', param, success, error, final);
     }
 };
 

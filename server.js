@@ -10,6 +10,9 @@ var app = express();
 /** 注册静态资源地址 */
 app.use('/public', express.static('public'));
 
+/** 请求中间件 */
+require('./scripts/utils/RequestUtil.js').addRequestMiddleware(app);
+
 /**
  * 注册router中配置的服务到app
  */
@@ -35,7 +38,8 @@ for(var i=0; i < routerLength; i++) {
     }catch(e){
         LogUtil.logError({
             module : item.name,
-            error: 'module config invalid'
+            error : 'router config invalid',
+            message: e.stack
         });
     }
 }

@@ -167,19 +167,12 @@ function IndexPageSwipe_update() {
  * @param reject function(error)
  */
 function sendIndexDataSearch(resolve, reject) {
-    var $ = window.jQuery;
-    $.ajax({
-        url : '../index_data',
-        type : 'POST',
-        dataType : 'json',
-        success : function(serviceData) {
-            resolve(serviceData);
-        },
-        error: function(err) {
-            reject("当前浏览器\n不支持本页面");
-        }
+    window.Sender.get('index_data', '', function(serviceData) {
+        resolve(serviceData);
+    },function(error) {
+        reject("当前浏览器\n不支持本页面");
     });
-};
+}
 
 function IndexPageView() {
     if(window.jQuery) {

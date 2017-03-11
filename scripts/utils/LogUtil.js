@@ -5,7 +5,11 @@
 module.exports = {
     logError : function(e) {
         console.log('ERROR:');
-        console.log(JSON.stringify(e));
+        if(e.stack) {
+            console.log(e.stack);
+        } else {
+            console.log(e);
+        }
     },
     logObject : function(obj) {
         console.log('VERBOSE:');

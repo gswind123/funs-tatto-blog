@@ -35,24 +35,15 @@ BlogPageView.prototype.getHTMLNode = function() {
 BlogPageView.prototype.onAttach = function() {
     var self = this;
     if(this._blogId) {
-        var $ = window.jQuery;
-        this._contentXhr = $.ajax({
-            type : "POST",
-            url : "../blog_content_search",
-            contentType : "application/json",
-            data : {
-                id : this._blogId
-            },
-            success : function(data) {
-                self.setViewModel(data);
-            },
-            error : function(err) {
-                //显示错误信息
-                LogUtil.e(JSON.stringify(err));
-            },
-            complete : function(data, xhr) {
-                self._contentXhr = null;
-            }
+        this._sendResult = Sender.post('blog_content_search', {
+            id : this._blogId
+        }, function(serviceData) { //success
+            self.setViewModel(serviceData)
+        }, function(err) { //error
+            //显示错误信息
+            LogUtil.e(JSON.stringify(err));
+        }, function() { //final
+            self._sendResult = null;
         });
     } else {
         //显示错误信息
@@ -61,9 +52,9 @@ BlogPageView.prototype.onAttach = function() {
 };
 BlogPageView.prototype.onDetach = function() {
     /** 取消正在发送的服务 */
-    if(this._contentXhr) {
-        this._contentXhr.abort();
-        this._contentXhr = null;
+    if(this._sendResult) {
+        this._sendResult.cancel();
+        this._sendResult = null;
     }
 };
 

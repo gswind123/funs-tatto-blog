@@ -1,10 +1,8 @@
-[
-  {
-    "title" : "第一篇文章标题",
-    "imgSrc" : "./assets/images/tatto.jpg",
-    "imgFooterLeft" : "图片的左下角注脚",
-    "imgFooterRight" : "2017/02/03",
-    "author" : "作者名",
-    "content" : "这是第一篇文章内容"
-  }
-]
+{
+  "title" : "第一篇文章标题",
+  "imgSrc" : "./assets/images/tatto.jpg",
+  "imgFooterLeft" : "图片的左下角注脚",
+  "imgFooterRight" : "2017/02/03",
+  "author" : "作者名",
+  "content" : "这是第一篇文章内容"
+}
