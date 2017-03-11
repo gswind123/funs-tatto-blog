@@ -5,6 +5,7 @@
 
 const Resources = require('../utils/Resources.js');
 const FS = require('fs');
+const Promise = require('promise');
 
 var getBlogContentByFile = function (blogId) {
     return new Promise(function (resolve, reject) {

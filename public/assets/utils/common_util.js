@@ -74,4 +74,52 @@ window.WindowUtil = {
     }
 };
 
+function sendAjax(serviceName, method, param, success, error, final) {
+    var ajaxParam = {};
+    ajaxParam.url = '../' + serviceName; //只考虑用在index.html单页应用的情况
+    if(method.toLowerCase() === 'post') {
+        ajaxParam.type = 'POST';
+        ajaxParam.contentType = 'application/json';
+        if(typeof(param) === 'object') {
+            ajaxParam.data = JSON.stringify(param);
+        } else {
+            ajaxParam.data = param;
+        }
+    } else {
+        ajaxParam.type = 'GET';
+        ajaxParam.data = param;
+    }
+    ajaxParam.success = success;
+    ajaxParam.error = error;
+    ajaxParam.complete = final;
+    ajaxParam.dataType = 'json';
+    var $xhr = window.jQuery.ajax(ajaxParam);
+    return {
+        _$xhr : $xhr,
+        cancel : function() {
+            if(this._$xhr) {
+                this._$xhr.abort();
+                this._$xhr = null;
+            }
+        }
+    };
+}
+window.Sender = {
+    /**
+     * 发送一个get请求
+     * @return sendResult 拥有cancel方法,可以取消正在发送的服务
+     */
+    get : function(serviceName, param, success, error, final) {
+        return sendAjax(serviceName, 'GET', param, success, error, final);
+    },
+
+    /**
+     * 发送一个post请求
+     * @return sendResult 拥有cancel方法,可以取消正在发送的服务
+     */
+    post : function(serviceName, param, success, error, final) {
+        return sendAjax(serviceName, 'POST', param, success, error, final);
+    }
+};
+
 })();

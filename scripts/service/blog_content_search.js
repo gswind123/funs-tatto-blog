@@ -1,4 +1,4 @@
-const BackendEngine = require('./../backend/BackendEngine.js');
+const BackendEngine = require('../utils/BackendEngine.js');
 const RequestUtil = require('../utils/RequestUtil.js');
 const LogUtil = require("../utils/LogUtil.js");
 

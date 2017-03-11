@@ -38,7 +38,8 @@ for(var i=0; i < routerLength; i++) {
     }catch(e){
         LogUtil.logError({
             module : item.name,
-            error: 'module config invalid'
+            error : 'router config invalid',
+            message: e.stack
         });
     }
 }

@@ -3,14 +3,16 @@
  * Created by hasee on 2017/3/5.
  */
 
+const Promise = require('promise');
+
 var engineTable = [
     {
         name: 'blog_content_fetch',
-        path: './blog_content_fetch.js'
+        path: '../backend/blog_content_fetch.js'
     },
     {
         name: 'index_data_fetch',
-        path: './index_data_fetch.js'
+        path: '../backend/index_data_fetch.js'
     }
 ];
 
@@ -23,7 +25,9 @@ var BackendEngine = {
                 return require(item.path)(parameter);
             }
         }
-        return false;
+        return new Promise(function(resolve, reject) {
+            reject("backend service not found");
+        });
     }
 };
 
