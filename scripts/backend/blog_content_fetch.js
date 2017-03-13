@@ -15,7 +15,7 @@ var getBlogContentByFile = function (blogId) {
         }
         var dataObj = {
             // success: true,
-            data: []
+            data: {}
         };
         //这里修改为根据blogId选择对应的JSON文件，但是要不要做一个文件的桥，还需商榷
         var blogName =  'blog_content_search.json';

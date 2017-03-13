@@ -1,5 +1,5 @@
   {
-    "title" : "第一篇文章标题",
+    "title" : "第一篇文章\n标题",
     "imgSrc" : "./assets/images/blogimg1.jpg",
     "imgFooterLeft" : "图片的左下角注脚",
     "imgFooterRight" : "2017/02/03",
@@ -7,7 +7,7 @@
     "content" : [
       {
         "type" : "text",
-        "data" : "这是第一篇文章/n的前几段"
+        "data" : "这是第一篇文章\n的前几段"
       },
       {
         "type" : "img",
@@ -23,7 +23,7 @@
       },
       {
         "type" : "text",
-        "data" : "这是第一篇文章/n的最后几段"
+        "data" : "这是第一篇文章\n的最后几段"
       }
     ]
   }
