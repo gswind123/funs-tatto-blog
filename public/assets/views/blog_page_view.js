@@ -19,11 +19,10 @@ function BlogPageView(blogId) {
             "           <span class='blog-page-title-img-note-left'></span>" +
             "           <span class='blog-page-title-img-note-right'></span>" +
             "       </div>" +
-            "       <div class='blog-page-content-title'>" +
-            "       </div>" +
-            "       <div class='blog-page-content-author'>" +
-            "       </div>" +
-            "       <div class='blog-page-content-text-img-container'>" +
+            "       <div class='blog-page-content-main'>" +
+            "           <h1 class='blog-page-content-title'></h1>" +
+            "           <p class='blog-page-content-author'></p> " +
+            "           <span class='blog-page-content-text-img'></span>" +
             "       </div>" +
             "   </div>" +
             "</div>");
@@ -43,7 +42,7 @@ function BlogPageView(blogId) {
         this._$titleImageNoteRight = $element.find('.blog-page-title-img-note-right');
         this._$contentTitle = $element.find('.blog-page-content-title');
         this._$contentAuthor = $element.find('.blog-page-content-author');
-        this._$contentTextImg = $element.find('.blog-page-content-text-img-container');
+        this._$contentTextImg = $element.find('.blog-page-content-text-img');
     } else {
         LogUtil.e('jQuery not support');
     }
@@ -92,24 +91,38 @@ function BlogPageView_updateWithViewModel() {
         this._$contentTitle.html(FormatUtil.str2html(data.title));
         this._$contentAuthor.html(FormatUtil.str2html(data.author));
         this._$contentTextImg.empty();//清除缓存的正文内容，重新添加
+        // this._$contentTextImg.append("<br />");
         var blogContent = data.content;
         var length = blogContent.length;
+        var temp = null;
+        var $temp = null;
         for (var i = 0; i < length; i++) {
-            var temp = blogContent[i];
+            temp = blogContent[i];
             if (temp.type === "text") {
-                this._$contentTextImg.append(
-                    "<div class='blog-page-content-text'>" +
-                    FormatUtil.str2html(temp.data) +
-                    "</div>");
-                // $('.blog-page-content-text').html(temp.data);
+                $temp = $("<p class='blog-page-content-text'></p>");
+                $temp && $temp.append(FormatUtil.str2html(temp.data));
+                this._$contentTextImg.append($temp);
+            } else if (temp.type === "subtitle1") {
+                $temp = $("<p class='blog-page-content-subtitle1'></p>");
+                $temp && $temp.append(FormatUtil.str2html(temp.data));
+                this._$contentTextImg.append($temp);
+            } else if (temp.type === "subtitle2") {
+                $temp = $("<p class='blog-page-content-subtitle2'></p>");
+                $temp && $temp.append(FormatUtil.str2html(temp.data));
+                this._$contentTextImg.append($temp);
+            } else if (temp.type === "imgFootnote") {
+                $temp = $("<p class='blog-page-content-imgFootnote'></p>");
+                $temp && $temp.append(FormatUtil.str2html(temp.data));
+                this._$contentTextImg.append($temp);
             } else if (temp.type === "img") {
-                this._$contentTextImg.append($(
-                    "<div class='blog-page-content-img'>" +
-                    "   <img src=" + temp.data + "></img>" +
-                    "</div>"));
+                $temp = $("<img class='blog-page-content-img'></img>");
+                $temp && $temp.attr('src', temp.data);
+                this._$contentTextImg.append($temp);
             } else {
                 LogUtil.e('后台数据类型错误！');
             }
+            temp = null;
+            $temp = null;
         }
     } else {
         alert("data invalid"); //TODO by yw_sun
