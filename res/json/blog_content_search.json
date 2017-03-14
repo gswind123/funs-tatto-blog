@@ -1,26 +1,26 @@
   {
-    "title" : "大数据推荐会使人\n变蠢？",
+    "title" : "大数据推荐会使人\n变蠢？\n",
     "imgSrc" : "./assets/images/blogimg1.jpg",
     "imgFooterLeft" : "图片的左下角注脚",
     "imgFooterRight" : "2017/02/03",
-    "author" : "作者名",
+    "author" : "作者名\n",
     "content" : [
       {
         "type" : "subtitle1",
-        "data" : "这是一级小标题"
+        "data" : "这是一级小标题\n"
       },
       {
         "type" : "subtitle2",
-        "data" : "这是二级小标题"
+        "data" : "这是二级小标题\n"
       },
       {
         "type" : "text",
-        "data" : "这是第一篇文章\n的第一段"
+        "data" : "这是第一篇文章\n的第一段\n"
       },
 
       {
         "type" : "imgFootnote",
-        "data" : "这是正文中图片的注脚"
+        "data" : "这是正文中图片的注脚\n"
       },
       {
         "type" : "img",
@@ -28,7 +28,7 @@
       },
       {
         "type" : "text",
-        "data" : "这是第一篇文章的第二段"
+        "data" : "这是第一篇文章的第二段\n"
       },
       {
         "type" : "img",
@@ -36,7 +36,7 @@
       },
       {
         "type" : "text",
-        "data" : "这是第一篇文章\n的最后一段"
+        "data" : "这是第一篇文章\n的最后一段\n"
       }
     ]
   }

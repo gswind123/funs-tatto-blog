@@ -42,7 +42,7 @@ window.URLUtil = {
 
 window.FormatUtil = {
     str2html : function(str) {
-        return str.replace('\n', '<br />');
+        return str.replace(/\n/g, '<br />');
     }
 };
 

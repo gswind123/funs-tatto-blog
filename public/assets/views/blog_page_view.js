@@ -20,8 +20,8 @@ function BlogPageView(blogId) {
             "           <span class='blog-page-title-img-note-right'></span>" +
             "       </div>" +
             "       <div class='blog-page-content-main'>" +
-            "           <h1 class='blog-page-content-title'></h1>" +
-            "           <p class='blog-page-content-author'></p> " +
+            "           <span class='blog-page-content-title'></span>" +
+            "           <span class='blog-page-content-author'></span> " +
             "           <span class='blog-page-content-text-img'></span>" +
             "       </div>" +
             "   </div>" +
@@ -99,28 +99,24 @@ function BlogPageView_updateWithViewModel() {
         for (var i = 0; i < length; i++) {
             temp = blogContent[i];
             if (temp.type === "text") {
-                $temp = $("<p class='blog-page-content-text'></p>");
+                $temp = $("<span class='blog-page-content-text'></span>");
                 $temp && $temp.append(FormatUtil.str2html(temp.data));
-                this._$contentTextImg.append($temp);
             } else if (temp.type === "subtitle1") {
-                $temp = $("<p class='blog-page-content-subtitle1'></p>");
+                $temp = $("<span class='blog-page-content-subtitle1'></span>");
                 $temp && $temp.append(FormatUtil.str2html(temp.data));
-                this._$contentTextImg.append($temp);
             } else if (temp.type === "subtitle2") {
-                $temp = $("<p class='blog-page-content-subtitle2'></p>");
+                $temp = $("<span class='blog-page-content-subtitle2'></span>");
                 $temp && $temp.append(FormatUtil.str2html(temp.data));
-                this._$contentTextImg.append($temp);
             } else if (temp.type === "imgFootnote") {
-                $temp = $("<p class='blog-page-content-imgFootnote'></p>");
+                $temp = $("<span class='blog-page-content-imgFootnote'></span>");
                 $temp && $temp.append(FormatUtil.str2html(temp.data));
-                this._$contentTextImg.append($temp);
             } else if (temp.type === "img") {
                 $temp = $("<img class='blog-page-content-img'></img>");
                 $temp && $temp.attr('src', temp.data);
-                this._$contentTextImg.append($temp);
             } else {
                 LogUtil.e('后台数据类型错误！');
             }
+            $temp && this._$contentTextImg.append($temp);
             temp = null;
             $temp = null;
         }
