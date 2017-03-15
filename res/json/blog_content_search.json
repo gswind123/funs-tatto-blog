@@ -5,6 +5,11 @@
     "imgFooterRight" : "2017/02/03",
     "author" : "作者名\n",
     "content" : [
+
+      {
+        "type" : "img",
+        "data" : "./assets/images/blogimg2.jpg"
+      },
       {
         "type" : "subtitle1",
         "data" : "这是一级小标题\n"
@@ -21,10 +26,6 @@
       {
         "type" : "imgFootnote",
         "data" : "这是正文中图片的注脚\n"
-      },
-      {
-        "type" : "img",
-        "data" : "./assets/images/blogimg2.jpg"
       },
       {
         "type" : "text",

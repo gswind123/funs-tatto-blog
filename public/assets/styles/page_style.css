@@ -162,8 +162,11 @@
 }
 .blog-page-content {
     width:100%;
+    height:100%;
+    overflow-y: scroll;
 }
 .blog-page-title-img-note {
+    position: relative;
     width: 100%;
     height: 1.8rem;
     color: #a98955;
@@ -241,5 +244,4 @@
     margin-top: 1.4rem;
     margin-bottom: 1.4rem;
     width: 100%;
-    height: 100%;
 }
